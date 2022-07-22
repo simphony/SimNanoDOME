@@ -1,0 +1,354 @@
+---
+author: "Giorgio La Civita, giorgio.lacivita2@unibo.it"
+namespace: "nanofoam"
+version: "0.8"
+ontology:
+
+  NanoFOAMWrapper:
+    description: The simNanoFOAM (nanoDOME + OpenFOAM + Elenbaas) wrapper
+    subclass_of:
+    - cuba.Wrapper
+
+  ############################ Relationships ###################
+
+  hasPart:
+    default_rel: true
+    description: "default relationship"
+    inverse: nanofoam.isPartOf
+    subclass_of:
+    - cuba.activeRelationship
+
+  isPartOf:
+    description: "inverse of the default relationship"
+    inverse: nanofoam.hasPart
+    subclass_of:
+    - cuba.passiveRelationship
+
+  hasProperty:
+    description: "Property relationship"
+    inverse: nanofoam.isProperty
+    subclass_of:
+    - cuba.activeRelationship
+
+  isProperty:
+    description: "inverse of the hasProperty relationship"
+    inverse: nanofoam.hasProperty
+    subclass_of:
+    - cuba.passiveRelationship
+
+  ############################ attributes ###################
+
+  vector:
+    subclass_of:
+    - cuba.attribute
+    datatype: VECTOR:FLOAT:3
+
+  number:
+    subclass_of:
+    - cuba.attribute
+    datatype: INT
+
+  value:
+    subclass_of:
+    - cuba.attribute
+    datatype: FLOAT
+
+  unit:
+    subclass_of:
+    - cuba.attribute
+    datatype: STRING
+
+  path:
+    subclass_of:
+    - cuba.attribute
+    datatype: STRING
+
+  name:
+    subclass_of:
+    - cuba.attribute
+    datatype: STRING
+
+ ########################### entities ###################
+
+  SymbolicComposition:
+    subclass_of:
+    - cuba.Entity
+
+  AccuracyLevel:
+    subclass_of:
+    - cuba.Entity
+
+  HighAccuracyLevel:
+    subclass_of:
+    - nanofoam.AccuracyLevel
+
+  MediumAccuracyLevel:
+    subclass_of:
+    - nanofoam.AccuracyLevel
+
+  LowAccuracyLevel:
+    subclass_of:
+    - nanofoam.AccuracyLevel
+
+  nanoReactor:
+    subclass_of:
+    - nanofoam.SymbolicComposition
+    - nanofoam.hasPart:
+        range: nanofoam.CylindricalReactorDimensions
+        exclusive: false
+        cardinality: 1
+    - nanofoam.hasPart:
+        range: nanofoam.reactorCell
+        exclusive: false
+        cardinality: some
+    - nanofoam.hasPart:
+        range: nanofoam.Time
+        exclusive: false
+        cardinality: 1
+
+  reactorCell:
+    subclass_of:
+    - nanofoam.SymbolicComposition
+    - nanofoam.hasProperty:
+        range: nanofoam.ThermoCond
+        exclusive: false
+        cardinality: 1
+    - nanofoam.hasProperty:
+        range: nanofoam.GasComposition
+        exclusive: false
+        cardinality: 1
+    - nanofoam.hasProperty:
+        range: nanofoam.Velocity
+        exclusive: false
+        cardinality: 1
+    - nanofoam.hasPart:
+        range: nanofoam.NanoParticleSizeDistribution
+        exclusive: false
+        cardinality: 1
+    attributes:
+      nanofoam.name: ~
+
+  SolidPrecursor:
+    subclass_of:
+    - cuba.Entity
+    - nanofoam.hasProperty:
+        range: nanofoam.MaterialType
+        exclusive: false
+        cardinality: 1
+    - nanofoam.hasProperty:
+        range: nanofoam.FeedRate
+        exclusive: false
+        cardinality: 1
+
+  Plasma:
+    subclass_of:
+    - cuba.Entity
+    - nanofoam.hasProperty:
+        range: nanofoam.PlasmaProperty
+        exclusive: true
+        cardinality: some
+
+  PlasmaSource:
+    subclass_of:
+    - cuba.Entity
+    - nanofoam.hasProperty:
+        range: nanofoam.nanoReactor
+        exclusive: false
+        cardinality: 1
+    - nanofoam.hasPart:
+        range: nanofoam.Plasma
+        exclusive: false
+        cardinality: 1
+    - nanofoam.hasPart:
+        range: nanofoam.SolidPrecursor
+        exclusive: false
+        cardinality: 1
+    - nanofoam.hasProperty:
+        range: nanofoam.InputPower
+        exclusive: false
+        cardinality: 1
+    - nanofoam.hasProperty:
+        range: nanofoam.FlowRate
+        exclusive: false
+        cardinality: 1
+
+  ThermoCond:
+    subclass_of:
+    - nanofoam.nanoReactor
+    - nanofoam.hasPart:
+        range: nanofoam.Pressure
+        exclusive: false
+        cardinality: 1
+    - nanofoam.hasPart:
+        range: nanofoam.Temperature
+        exclusive: false
+        cardinality: 1
+    - nanofoam.hasPart:
+        range: nanofoam.TemperatureGradient
+        exclusive: false
+        cardinality: 1
+    - nanofoam.hasPart:
+        range: nanofoam.TemperatureStreamline
+        exclusive: false
+        cardinality: some
+
+  CylindricalReactorDimensions:
+    subclass_of:
+    - nanofoam.nanoReactor
+    - nanofoam.hasPart:
+        range: nanofoam.Diameter
+        exclusive: false
+        cardinality: 1
+    - nanofoam.hasPart:
+        range: nanofoam.Length
+        exclusive: false
+        cardinality: 1
+    - nanofoam.hasPart:
+        range: nanofoam.InletDiameter
+        exclusive: false
+        cardinality: 1
+
+  GasComposition:
+    subclass_of:
+    - nanofoam.nanoReactor
+    - nanofoam.hasPart:
+        range: nanofoam.MolarFraction
+        exclusive: false
+        cardinality: some
+
+  NanoParticleSizeDistribution:
+    subclass_of:
+    - nanofoam.SymbolicComposition
+    - nanofoam.hasPart:
+        range: nanofoam.Bin
+        exclusive: true
+        cardinality: some
+    attributes:
+      nanofoam.name: ~
+
+  Bin:
+    subclass_of:
+    - cuba.Entity
+    - nanofoam.hasPart:
+        range: nanofoam.ParticleDiameter
+        exclusive: false
+        cardinality: 1
+    - nanofoam.hasPart:
+        range: nanofoam.ParticleNumberDensity
+        exclusive: false
+        cardinality: 1
+    - nanofoam.hasPart:
+        range: nanofoam.ParticleVolumePercentage
+        exclusive: false
+        cardinality: 1
+    - nanofoam.hasPart:
+        range: nanofoam.ParticleFractalDimension
+        exclusive: false
+        cardinality: 1
+
+ ################### quantities #################
+
+  Path:
+    subclass_of:
+    - cuba.Entity
+    attributes:
+      nanofoam.path: ~
+      nanofoam.name: ~
+      nanofoam.unit: ~
+
+  MaterialType:
+    subclass_of:
+    - cuba.Entity
+    attributes:
+      nanofoam.name: ~
+
+  PhysicalQuantity:
+    subclass_of:
+    - cuba.Entity
+    attributes:
+      nanofoam.value: ~
+      nanofoam.unit: ~
+      nanofoam.name: ~
+
+  PhysicalQuantityVector:
+    subclass_of:
+    - cuba.Entity
+    attributes:
+      nanofoam.vector: ~
+      nanofoam.unit: ~
+
+  Type:
+    subclass_of:
+    - nanofoam.MaterialType
+
+  Diameter:
+    subclass_of:
+    - nanofoam.PhysicalQuantity
+
+  InletDiameter:
+    subclass_of:
+    - nanofoam.PhysicalQuantity
+
+  Length:
+    subclass_of:
+    - nanofoam.PhysicalQuantity
+
+  Time:
+    subclass_of:
+    - nanofoam.PhysicalQuantity
+
+  Velocity:
+    subclass_of:
+    - nanofoam.PhysicalQuantity
+
+  Pressure:
+    subclass_of:
+    - nanofoam.PhysicalQuantity
+
+  Temperature:
+    subclass_of:
+    - nanofoam.PhysicalQuantity
+
+  TemperatureGradient:
+    subclass_of:
+    - nanofoam.PhysicalQuantity
+
+  InputPower:
+    subclass_of:
+    - nanofoam.PhysicalQuantity
+
+  FlowRate:
+    subclass_of:
+    - nanofoam.PhysicalQuantity
+
+  PlasmaProperty:
+    subclass_of:
+    - nanofoam.Path
+
+  TemperatureStreamline:
+    subclass_of:
+    - nanofoam.Path
+
+  FeedRate:
+    subclass_of:
+    - nanofoam.PhysicalQuantity
+
+  MolarFraction:
+    subclass_of:
+    - nanofoam.PhysicalQuantity
+
+  ParticleDiameter:
+    subclass_of:
+    - nanofoam.PhysicalQuantity
+
+  ParticleVolumePercentage:
+    subclass_of:
+    - nanofoam.PhysicalQuantity
+
+  ParticleNumberDensity:
+    subclass_of:
+    - nanofoam.PhysicalQuantity
+
+  ParticleFractalDimension:
+    subclass_of:
+    - nanofoam.PhysicalQuantity

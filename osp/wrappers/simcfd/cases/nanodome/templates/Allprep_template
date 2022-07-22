@@ -1,0 +1,21 @@
+#!/bin/sh
+# clear && clear
+
+cd ${0%/*} || exit 1	# Run from this directory
+path
+par_switch
+base_val='0'
+
+echo "Loading OpenFOAM's environment..."
+. $path
+echo ""
+. $WM_PROJECT_DIR/bin/tools/RunFunctions		# Run functions
+
+# Generate the Mesh
+echo "Generating the computational domain:"
+runApplication blockMesh
+
+if [ "$par_switch" != "$base_val" ]; then
+runApplication decomposePar -force -latestTime
+fi
+echo ""

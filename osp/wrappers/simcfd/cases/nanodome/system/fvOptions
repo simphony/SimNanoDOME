@@ -1,0 +1,105 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v1906                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+	version		2.0;
+	format		ascii;
+	class			dictionary;
+	object		fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+RadCodedSource
+{
+	type						scalarCodedSource;
+	selectionMode		all;
+	fields					(h);
+	name					radSource;
+
+	codeInclude
+	#{
+	#};
+
+	codeCorrect
+	#{
+	#};
+
+	codeAddSup
+	#{
+		//Radiation loss temperature profile import
+		string data_ = "constant/radiation.rad";
+
+		// Load all necessary field from mesh
+		const volScalarField& Tc = mesh_.lookupObject<volScalarField>("T");
+		const scalarField& Vc = mesh_.V();
+
+		//Create the source field
+		scalarField& heSource = eqn.source();
+
+		//Vectors anche counter pre-allocation
+		int N = 28;
+		double Trad_ [N];
+		double Rad_ [N];
+
+		//Scan and import the radiation file
+		const char * dat = data_.c_str();
+		int i;
+		float a[2];
+		FILE *fp;
+		fp = fopen (dat,"r");
+		for(i=0; i<N; i++)
+		{
+			fscanf(fp,"%e %e\n",&a[0],&a[1]);
+			Trad_[i] = a[0];
+			Rad_[i] = a[1];
+		}
+		fclose(fp);
+
+		//Parameters needed for radiation profile interpolation
+		int k;
+		double xa;
+		double mT = Trad_ [0];
+		double MT = Trad_ [N - 1];
+		double dT = 1000;
+
+		//Apply the source
+		forAll(Tc, i)
+		{
+			if (Tc[i] <= mT)
+			{
+				heSource[i] = Rad_ [0];
+			}
+			else if (Tc[i] >= MT)
+			{
+				heSource[i] = Rad_ [N - 1];
+			}
+			else
+			{
+				k = int((Tc[i] - mT)/dT);
+				xa = (Tc[i] - mT)/dT;
+				heSource[i] = Vc[i]*((1. - xa + k)*Rad_ [k] + (xa - k)*Rad_ [k+1]);
+			}
+		};
+// 		scalar total = gSum(heSource/Vc);
+// 		Info <<"    Total Radiative Loss [W/m3]: " << total << endl;
+	#};
+
+    codeConstrain
+	#{
+	#};
+
+	// Dummy entry. Make dependent on above to trigger recompilation
+	code
+	#{
+		$codeInclude
+		$codeCorrect
+		$codeAddSup
+		$codeSetValue
+	#};
+}
+
+//************************************************************************** //

@@ -1,0 +1,197 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+version		2.0;
+format		ascii;
+class			dictionary;
+object		blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+convertToMeters	1.0;
+
+// // INPUT
+// R 3.5e-3;
+// RR 0.15;
+// LL 1.65;
+// deltax 0.175;
+// deltaz 0.1;
+// // END OF CODE/USER INPUT
+// 
+// // Chamber dimensions calculation based on PL-34 system
+// fs #calc "$LL*0.4848";
+// ss #calc "$fs + $LL*0.3939";
+// // ts #calc "$ss + $LL*0.1212";
+// // fr #calc "$RR*0.1938";
+// fr $R;
+// 
+// 
+// // Mesh parameters
+// stretchx 3; //1; //anysotropic spacing factor for x direction
+// stretchz 1; //12.5; //1; //anysotropic spacing factor for z direction
+// stretchzI #calc "1/$stretchz";
+// red_z 1.0;
+// angle #calc "degToRad(2.5)";
+// 
+// deltaxx0 #calc "4*$deltax*0.5*pow(10,floor(log10($R)))";
+// deltaxx1 #calc "$deltax*0.1*pow(10,floor(log10(($RR-$R))))";
+// deltazz #calc "$red_z*$deltaz*0.1*pow(10,floor(log10($LL)))";
+
+// // Blocks' vertices' parameters
+// r0c #calc "$R*cos($angle)";
+// r0s #calc "$R*sin($angle)";
+// r0c_ #calc "-$R*cos($angle)";
+// r0s_ #calc "-$R*sin($angle)";
+// r1c #calc "$RR*cos($angle)";
+// r1s #calc "$RR*sin($angle)";
+// r1c_ #calc "-$RR*cos($angle)";
+// r1s_ #calc "-$RR*sin($angle)";
+// r2c #calc "$fr*cos($angle)";
+// r2s #calc "$fr*sin($angle)";
+// r2c_ #calc "-$fr*cos($angle)";
+// r2s_ #calc "-$fr*sin($angle)";
+// 
+// // Blocks' cell numbers'
+// xcells0 #calc "ceil($R/$deltaxx0)";
+// xcells1 #calc "ceil(($RR-$R)/$deltaxx1)";
+// zcells #calc "ceil($LL/$deltazz)";
+
+// Settings
+stretchx 1;
+stretchz 1;
+stretchzI 1;
+
+// Blocks' vertices' parameters
+fs 1;
+ss 1;
+r0c 1;
+r0s 1;
+r0c_ 1;
+r0s_ 1;
+r1c 1;
+r1s 1;
+r1c_ 1;
+r1s_ 1;
+r2c 1;
+r2s 1;
+r2c_ 1;
+r2s_ 1;
+
+// Blocks' cell numbers'
+xcells0 1;
+xcells1 1;
+zcells 1;
+
+vertices
+(
+	//BLOCK 0
+	(0 0 0) //0
+	($r0c $r0s_ 0) //1
+	($r0c $r0s 0) //2
+	(0 0 0) //3
+	(0 0 $fs) //4
+	($r0c $r0s_ $fs) //5
+	($r0c $r0s $fs) //6
+	(0 0 $fs)//7
+	//BLOCK 1
+	($r0c $r0s_ 0) //8
+	($r1c $r1s_ 0) //9
+	($r1c $r1s 0) //10
+	($r0c $r0s 0) //11
+	($r0c $r0s_ $fs) //12
+	($r1c $r1s_ $fs) //13
+	($r1c $r1s $fs) //14
+	($r0c $r0s $fs)//15
+	//BLOCK 2
+	($r0c $r0s_ $ss) //16
+	($r0c $r0s $ss)//17
+	//BLOCK 3
+	(0 0 $ss) //18
+);
+
+blocks
+(
+	hex (0 1 2 0 4 5 6 4) ($xcells0 1 $zcells) simpleGrading ($stretchx 1 $stretchz) //b0
+	hex (1 9 10 2 5 13 14 6) ($xcells1 1 $zcells) simpleGrading ($stretchx 1 $stretchz) //b1
+	hex (5 13 14 6 16 16 17 17) ($xcells1 1 $zcells) simpleGrading ($stretchx 1 $stretchzI) //b2
+	hex (4 5 6 4 18 16 17 18) ($xcells0 1 $zcells) simpleGrading ($stretchx 1 $stretchzI) //b3
+);
+
+edges
+(
+);
+
+boundary
+(
+	inlet
+	{
+		type patch;
+		faces
+		(
+			(0 1 2 0)
+		);
+	}
+	wall_in
+	{
+		type wall;
+		faces
+		(
+			(1 9 10 2)
+		);
+	}
+	outlet
+	{
+		type patch;
+		faces
+		(
+			(18 16 17 18)
+		);
+	}
+	wall
+	{
+		type wall;
+		faces
+		(
+			(9 10 13 14)
+			(13 14 16 17)
+		);
+	}
+	front
+	{
+		type wedge;
+		faces
+		(
+			(2 0 6 4)
+			(14 6 17 17)
+			(10 2 14 6)
+			(6 4 17 18)
+		);
+	}
+	back
+	{
+		type wedge;
+		faces
+		(
+			(0 1 4 5)
+			(1 9 5 13)
+			(4 5 18 16)
+			(5 13 16 16)
+		);
+	}
+	axis
+	{
+		type empty;
+		faces
+		(
+			(0 0 4 4)
+			(4 4 18 18)
+		);
+	}
+);
+
+// ************************************************************************* //

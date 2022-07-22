@@ -1,0 +1,4 @@
+recursive-include osp/wrappers/simcfd/ *
+recursive-include osp/wrappers/simnanodome/ *
+recursive-include osp/wrappers/simelenbaas/ *
+recursive-include osp/wrappers/simcoupledreactor/ *

@@ -1,0 +1,33 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  5                                     |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org          |
+|    \\/     M anipulation  |                                                    |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+	version		2.0;
+	format		ascii;
+	class			dictionary;
+	location	"system";
+	object		plasma_inlet;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+ar 1; //Ar molar fraction [%mol]
+
+h2 0; //H2 molar fraction [%mol]
+
+n2 0; //N2 molar fraction [%mol]
+
+o2 0; //O2 molar fraction [%mol]
+
+vfr0 70; //Gas flow rate [slpm]
+
+Pow 10; //Supplied current [A]
+
+D 0.013; //Torch diameter [m]
+
+Twall 500; //Wall temperature [K]
+
+// ************************************************************************* //

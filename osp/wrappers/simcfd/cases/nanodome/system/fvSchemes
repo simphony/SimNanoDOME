@@ -1,0 +1,68 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v1906                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+	version		2.0;
+	format		ascii;
+	class			dictionary;
+	location	"system";
+	object		fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+ddtSchemes
+{
+// 	default			steadyState;
+	default			CrankNicolson 0.5;
+}
+
+gradSchemes
+{
+// 	default			Gauss linear;
+	default			faceLimited leastSquares 0.5;
+	grad(U)				faceLimited leastSquares 0.5;
+
+}
+
+divSchemes
+{
+	default									none;
+
+// 	div(phi,U)								bounded Gauss linearUpwind grad(U);
+	div(phi,U)								Gauss linearUpwind grad(U);
+	div(phi,k)								bounded Gauss limitedLinear 1;
+// 	div(phi,k)								Gauss upwind;
+	div(phi,epsilon)						bounded Gauss limitedLinear 1;
+// 	div(phi,epsilon)						Gauss upwind;
+	div(phi,h)								bounded Gauss limitedLinear 1;
+	div(phi,K)								bounded Gauss limitedLinear 1;
+    div((nuEff*dev2(T(grad(U)))))			Gauss linear;
+	div(((rho*nuEff)*dev2(T(grad(U)))))		Gauss linear;
+    div(nonlinearStress)					Gauss linear;
+}
+
+laplacianSchemes
+{
+	default 		Gauss linear limited 0.777; //corrected
+}
+
+interpolationSchemes
+{
+	default			linear;
+}
+
+snGradSchemes
+{
+	default			limited 0.777; //1
+}
+
+wallDist
+{
+	method			meshWave;
+}
+
+// ************************************************************************* //

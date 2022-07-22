@@ -1,0 +1,127 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v1906                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+	version		2.0;
+	format		ascii;
+	class			volVectorField;
+	location	"0";
+	object		U;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+dimensions		[0 1 -1 0 0 0 0];
+
+internalField		uniform (0 0 10);
+
+boundaryField
+{
+	inlet
+	{
+		type            codedFixedValue;
+		value           uniform (0 0 0);
+
+		// Name of the generated boundary condition
+		name    tabulatedUProfile;
+
+		code
+		#{
+		//Profile file relative path
+		string data_ = "constant/VR";
+
+		const fvPatch& boundaryPatch = patch();
+		const vectorField& Cf = boundaryPatch.Cf();
+		fixedValueFvPatchVectorField myPatch(*this);
+
+		//Profile vector dimensions and pre-allocation
+		const int N = 201;
+		float prof_ [N];
+		float rad_ [N];
+
+		//Scan and import the profile file
+		const char * dat = data_.c_str();
+		int i;
+		float a[2];
+		FILE *fp;
+		fp = fopen (dat,"r");
+		for(i=0; i<N; i++)
+		{
+			fscanf(fp,"%e %e\n",&a[0],&a[1]);
+			rad_[i] = a[0];
+			prof_[i] = a[1];
+		}
+		fclose(fp);
+
+		//Parameters needed for profile interpolation on the specified patch
+		int k;
+		scalar xa;
+		const scalar mR = 0;
+		const scalar MR = rad_[N-1];
+		const scalar dR = rad_[1];
+		const scalar Cc = 0.0;
+
+		//Apply the boundary condition 
+		forAll(Cf, i)
+		{
+			scalar x = Cf[i].x() - Cc;
+			scalar y = Cf[i].y() - Cc;
+			scalar r = sqrt(x*x + y*y);
+
+			if (r <= mR)
+			{
+				myPatch[i] = vector(0, 0, prof_ [0]);
+			}
+			else if (r >= MR)
+			{
+				myPatch[i] = vector(0, 0, prof_ [N - 1]);
+			}
+			else
+			 {
+				k = int((r - mR)/dR);
+				xa = (r - mR)/dR;
+				myPatch[i] = vector(0, 0, ((1. - xa + k)*prof_ [k] + (xa - k)*prof_ [k+1]));
+			 }
+		}
+
+		operator == (myPatch);
+		#};
+	}
+
+	outlet
+	{
+		type				zeroGradient;
+	}
+
+	wall_in
+	{
+		type				fixedValue;
+		value			uniform (0 0 0);
+	}
+
+	wall
+	{
+		type				fixedValue;
+		value			uniform (0 0 0);
+	}
+
+	back
+	{
+		type				wedge;
+	}
+
+	front
+	{
+		type				wedge;
+	}
+
+	axis
+	{
+		type				empty;
+	}
+}
+
+// ************************************************************************* //
