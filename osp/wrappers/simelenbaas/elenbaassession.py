@@ -41,8 +41,7 @@ class ElenbaasSession(SimWrapperSession):
     def _run(self, root_cuds_object):
         """Call the run command of the engine."""
         if self._initialized:
-            # elen_run(self._elen_dict,self._case_files,self._case_dir)
-            input()
+            elen_run(self._elen_dict,self._case_files,self._case_dir)
             self._create_CUDS()
         else:
             raise ValueError("Session not initialized")

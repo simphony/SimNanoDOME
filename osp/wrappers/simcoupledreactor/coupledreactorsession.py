@@ -57,11 +57,6 @@ class CoupledReactorSession(SimWrapperSession):
             # Run the engine for a single timestep
             cs, U, T, p, dt = self.eng.run(time,cs)
 
-            # # Timestep update
-            # dt_w = self._get_obj(self.reactor, ["Current Timestep"])
-            # if dt_w.value > dt and dt != 0.:
-            #     dt_w.value = dt
-
             for idx, cl in enumerate(self.cells):
                 vel = cl.get(oclass=onto.Velocity)[0]
                 vel.value = U[idx]

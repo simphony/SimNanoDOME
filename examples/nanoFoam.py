@@ -17,15 +17,15 @@ from osp.core.utils import pretty_print
 #####################################################################
 # modes supported: elenbaas (elenbaas only), nanodome (nanodome only),
 # cfd (openfoam and elenbaas), linked (nanofoam), coupled (nanocouplefoam)
-mode = 'linked'
+mode = 'elenbaas'
 
 # Create the computational mesh, boundary conditions and properties
 #####################################################################
 
 # Set the accuracy level
-# accuracy_level = onto.LowAccuracyLevel()
+accuracy_level = onto.LowAccuracyLevel()
 # accuracy_level = onto.MediumAccuracyLevel()
-accuracy_level = onto.HighAccuracyLevel()
+# accuracy_level = onto.HighAccuracyLevel()
 
 # Create precursor's species
 prec = onto.SolidPrecursor()
@@ -485,7 +485,6 @@ elif mode == 'coupled':
 
         while time.value < 7e-4:
 
-            # if save_time > save_step:
             print("Time: ",time.value)
             print("")
 
@@ -535,7 +534,7 @@ elif mode == 'coupled':
                     primaries = res.get(prim_uid)
 
                     if (particles.get(oclass=onto.Bin)) or \
-                       (primaries.get(oclass=onto.Bin)) :
+                        (primaries.get(oclass=onto.Bin)) :
 
                         # Histogram plotting examples for Particles and Primaries
                         # for Medium and High Accuracy Levels

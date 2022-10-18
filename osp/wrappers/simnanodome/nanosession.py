@@ -166,6 +166,7 @@ class NanoDOMESession(SimWrapperSession):
                                  self._gas_fractions[3]*1.429;
 
         else:
+
             self._bool_stream = False
             self._bool_coupled = True
 
@@ -201,7 +202,7 @@ class NanoDOMESession(SimWrapperSession):
                         cs_temp[self.gas_names.index(ss.name)+1] = ss.value
                 cs.append(cs_temp)
 
-            self.eng.set_network(self.species, pp, TT, cs)
+            self.eng.net_set = False
 
         self._initialized = True
 
@@ -367,13 +368,13 @@ class NanoDOMESession(SimWrapperSession):
 
         tf = self._get_property(self._reactor, ["Simulation Time"])
 
-        # cs = self.eng.run_network(tf,pp,TT,vels,cs)
+        cs = self.eng.run_network(tf,pp,TT,vels,cs,self.species)
 
-        # # Timestep update
-        # dt_w = self._get_obj(self._reactor, ["Current Timestep"])
-        # dt = self.eng.net.get_dt()
-        # if dt_w.value > dt and dt != 0.:
-        #     dt_w.value = dt
+        # Timestep update
+        dt_w = self._get_obj(self._reactor, ["Current Timestep"])
+        dt = self.eng.net.get_dt()
+        if dt_w.value > dt and dt != 0.:
+            dt_w.value = dt
 
         for idx, cl in enumerate(self.cells):
             gas = cl.get(oclass=onto.GasComposition)[0]

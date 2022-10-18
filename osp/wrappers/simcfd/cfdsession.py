@@ -24,11 +24,11 @@ class CFDSession(SimWrapperSession):
         self._initialized = False
         self._case_dir = None
         # self._case_files =  os.path.abspath(
-        #                     os.path.join(os.getcwd(), 
+        #                     os.path.join(os.getcwd(),
         #                                  os.pardir,
         #                                  "osp/wrappers/simcfd/cases/nanodome/"))
         # self._foam_core = os.path.abspath(
-        #                     os.path.join(os.getcwd(), 
+        #                     os.path.join(os.getcwd(),
         #                                  os.pardir,
         #                                  "osp/wrappers/simcfd/modules/foam/OpenFOAM-v1906"))
         self._case_files = os.path.join(
@@ -396,10 +396,13 @@ class CFDSession(SimWrapperSession):
                 T_found = False
                 U_found = False
 
-        print("Streamfiles exported.")
-        print("")
+        if len(stream_paths) != 0:
+            print("Streamfiles exported.")
+            print("")
 
-        return stream_paths
+            return stream_paths
+        else:
+            raise ValueError("CFD simulation crashed. No streamfiles exported.")
 
     def _import_stream_file(self,filename):
         "Imports a series of streamlines data from an OpenFOAM CFD simulation."

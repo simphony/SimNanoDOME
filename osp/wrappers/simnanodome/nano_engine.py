@@ -630,30 +630,20 @@ class nano_engine:
             return particles, primaries
 
 
-    def set_network(self,specs,pp,TT,cs):
-        self.vals = []
-        self.units = []
-        self.mols = []
-        self.species = []
-        for sp in specs:
-            self.vals.append(nn.Real(0.))
-            self.units.append(nn.Unit("#"))
-            self.mols.append(nn.MolarFraction(self.vals[-1],self.units[-1]))
-            self.species.append(nn.SingleComponentComposition(self.mols[-1],sp))
+    def set_network(self,specs,pp,TT,cs, mass, bulk_l):
 
-        self.net = nano_engine.create_network(self.species, pp, TT, cs)
-
-    def create_network(specs, pp, TT, cs):
         cells = []
         for idx, csi in enumerate(cs):
-            cells.append(nn.nanoCell(specs, pp[idx], TT[idx], csi))
+            cells.append(nn.nanoCell(specs, pp[idx], TT[idx], csi, mass, bulk_l))
         net = nn.nanoNetwork(cells)
 
-        return net
+        self.net = net
+        self.net_set = True
 
-    def run_network(self,tf,pp,TT,vels,cs):
+    def run_network(self,tf,pp,TT,vels,cs,specs):
 
-        print("RUN",flush=True)
+        if not self.net_set == True:
+            self.set_network(specs, pp, TT, cs,self.get_prec_mass(specs[0]), self.get_bulk_liquid(specs[0]))
 
         while self.net.get_t() < tf:
             cs = self.net.timestep(pp, TT, vels, cs)

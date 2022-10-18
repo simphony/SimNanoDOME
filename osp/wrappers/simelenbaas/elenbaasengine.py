@@ -4,8 +4,9 @@
 
 import os
 import numpy as np
-import scipy.integrate as integrate
-import scipy.io as io
+
+from scipy import integrate as integrate
+from scipy import io as io
 
 def _density(T,data):
     "Interpolates density datas on T"
