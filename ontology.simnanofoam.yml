@@ -130,7 +130,7 @@ ontology:
 
   SolidPrecursor:
     subclass_of:
-    - cuba.Entity
+    - nanofoam.PlasmaSource
     - nanofoam.hasProperty:
         range: nanofoam.MaterialType
         exclusive: false
@@ -142,7 +142,7 @@ ontology:
 
   Plasma:
     subclass_of:
-    - cuba.Entity
+    - nanofoam.PlasmaSource
     - nanofoam.hasProperty:
         range: nanofoam.PlasmaProperty
         exclusive: true
@@ -228,7 +228,7 @@ ontology:
 
   Bin:
     subclass_of:
-    - cuba.Entity
+    - nanofoam.NanoParticleSizeDistribution
     - nanofoam.hasPart:
         range: nanofoam.ParticleDiameter
         exclusive: false
@@ -269,13 +269,6 @@ ontology:
       nanofoam.value: ~
       nanofoam.unit: ~
       nanofoam.name: ~
-
-  PhysicalQuantityVector:
-    subclass_of:
-    - cuba.Entity
-    attributes:
-      nanofoam.vector: ~
-      nanofoam.unit: ~
 
   Type:
     subclass_of:
