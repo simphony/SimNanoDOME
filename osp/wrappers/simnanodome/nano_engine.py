@@ -643,7 +643,8 @@ class nano_engine:
     def run_network(self,tf,pp,TT,vels,cs,specs):
 
         if not self.net_set == True:
-            self.set_network(specs, pp, TT, cs,self.get_prec_mass(specs[0]), self.get_bulk_liquid(specs[0]))
+
+            self.set_network(specs, pp, TT, cs, self.get_prec_mass(specs[0]), self.get_bulk_liquid(specs[0]))
 
         while self.net.get_t() < tf:
             cs = self.net.timestep(pp, TT, vels, cs)

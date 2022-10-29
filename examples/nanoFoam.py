@@ -17,14 +17,14 @@ from osp.core.utils import pretty_print
 #####################################################################
 # modes supported: elenbaas (elenbaas only), nanodome (nanodome only),
 # cfd (openfoam and elenbaas), linked (nanofoam), coupled (nanocouplefoam)
-mode = 'elenbaas'
+mode = 'coupled'
 
 # Create the computational mesh, boundary conditions and properties
 #####################################################################
 
 # Set the accuracy level
-accuracy_level = onto.LowAccuracyLevel()
-# accuracy_level = onto.MediumAccuracyLevel()
+# accuracy_level = onto.LowAccuracyLevel()
+accuracy_level = onto.MediumAccuracyLevel()
 # accuracy_level = onto.HighAccuracyLevel()
 
 # Create precursor's species
