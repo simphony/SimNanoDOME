@@ -2,28 +2,31 @@
 @author: Giorgio La Civita, UNIBO DIN
 """
 
-import numpy as np, os, time
+import numpy as np, os, time, sys
 from osp.wrappers.simnanodome.nanolib import libontodome as nn
 
 class nano_engine:
 
     def PSD_post(self,psd,voll):
 
-        vol = np.asarray(voll).astype(float)
-        psd = np.asarray(psd).astype(float)
+        if (len(psd)==0):
+            return [0], [0]
+        else:
+            vol = np.asarray(voll).astype(float)
+            psd = np.asarray(psd).astype(float)
 
-        pmin = np.amin(psd)
-        pmax = np.amax(psd)
+            pmin = np.amin(psd)
+            pmax = np.amax(psd)
 
-        counters, bins = np.histogram(psd, range=(pmin, pmax), bins=15)
-        psd_diams = np.zeros(len(counters))
-        psd_numbs = np.zeros(len(counters))
+            counters, bins = np.histogram(psd, range=(pmin, pmax), bins=15)
+            psd_diams = np.zeros(len(counters))
+            psd_numbs = np.zeros(len(counters))
 
-        for kk in range(0,len(counters)):
-            psd_diams[kk] = (bins[kk])
-            psd_numbs[kk] = (counters[kk]/vol)
+            for kk in range(0,len(counters)):
+                psd_diams[kk] = (bins[kk])
+                psd_numbs[kk] = (counters[kk]/vol)
 
-        return psd_diams,psd_numbs
+            return psd_diams,psd_numbs
 
     def counter_trigger(self,iter, every_n_iter):
 
@@ -318,7 +321,7 @@ class nano_engine:
         for idx,gf in enumerate(dictio._gas_fractions,start=1):
             val = (gf*self.get_gas_mass(dictio.species[idx])/AMU/(MM/AMU))*dictio._flowrate*dictio._dens_ref/60000.
             nm_gases.append(val)
-            nm_gas += val;
+            nm_gas += val
 
         ntot = nm_prec + nm_gas
 
@@ -334,14 +337,17 @@ class nano_engine:
 
         # Overall end time
         iter = 0
-        tf = 7e-4
+        try:
+            self.tf
+        except:
+            self.tf = 7e-4
 
         # NanoDOME settings based on accuracy level
         if dictio._acc_level == "Low":
             if dictio._bool_stream:
-                t_end = tf #time_evo[-1]
+                t_end = self.tf #time_evo[-1]
             else:
-                t_end = tf
+                t_end = self.tf
 
             dt = 1e-9
             SAVE_EVERY = 1000
@@ -366,9 +372,9 @@ class nano_engine:
 
         elif dictio._acc_level == "Medium":
             if dictio._bool_stream:
-                t_end = tf #time_evo[-1]
+                t_end = self.tf #time_evo[-1]
             else:
-                t_end = tf
+                t_end = self.tf
 
             Df = 1.6 #based on NanoDOME D3.4
             vol = np.power(1e-4, 3)
@@ -407,9 +413,9 @@ class nano_engine:
 
         elif dictio._acc_level == "High":
             if dictio._bool_stream:
-                t_end = tf #time_evo[-1]
+                t_end = self.tf #time_evo[-1]
             else:
-                t_end = tf
+                t_end = self.tf
 
             T_melt = self.get_melting_point(dictio.species[0])
             bliq = self.get_bulk_liquid(dictio.species[0])
@@ -554,13 +560,13 @@ class nano_engine:
                     if (save_step>=PSD_DATA):
                         clock.stop()
 
-                        particles_sizes = part.get_particles_sizes();
-                        aggregates_sizes = part.get_aggregates_sizes();
+                        particles_sizes = part.get_particles_sizes()
+                        aggregates_sizes = part.get_aggregates_sizes()
 
                         # print particles sizes
                         with open(part_sizes_file,"w") as psd:
                             print(10*particles_sizes,file=psd)
-                        psd.close();
+                        psd.close()
 
                         # print aggregates sizes
                         with open(agg_sizes_file,"w") as asd:
@@ -585,13 +591,13 @@ class nano_engine:
         # Only for Medium and High accuracy levels
         if dictio._delete_simulation_files is False:
             if dictio._acc_level == "Medium" or dictio._acc_level == "High":
-                particles_sizes = part.get_particles_sizes();
-                aggregates_sizes = part.get_aggregates_sizes();
+                particles_sizes = part.get_particles_sizes()
+                aggregates_sizes = part.get_aggregates_sizes()
 
                 # print particles sizes
                 with open(part_sizes_file,"w") as psd:
                     print(particles_sizes,file=psd)
-                psd.close();
+                psd.close()
 
                 # print aggregates sizes
                 with open(agg_sizes_file,"w") as asd:

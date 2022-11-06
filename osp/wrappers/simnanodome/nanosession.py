@@ -23,6 +23,7 @@ class NanoDOMESession(SimWrapperSession):
         # Engine specific initializations
         self._initialized = False
         self._case_dir = None
+        self.eng = eng()
 
     def __str__(self):
         return "nanoDOME session for nanoparticle synthesis"
@@ -75,8 +76,6 @@ class NanoDOMESession(SimWrapperSession):
         pass
 
     def _initialize(self, root_cuds_object, buffer):
-
-        self.eng = eng()
 
         self._case_dir = os.path.join(os.getcwd(),
                                 "nanodome-%s" % root_cuds_object.uid)
@@ -280,7 +279,6 @@ class NanoDOMESession(SimWrapperSession):
     def _nano_run(self, root_cuds_object):
 
         # Pass the results to the Engine
-        # for dist in self._reactor.get(oclass=onto.NanoParticleSizeDistribution):
         for dist in self._reactor.get(oclass=onto.NanoParticleSizeDistribution):
             if dist.name == 'Particles':
                 self._part_res = dist

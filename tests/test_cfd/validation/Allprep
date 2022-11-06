@@ -2,7 +2,7 @@
 # clear && clear
 
 cd ${0%/*} || exit 1	# Run from this directory
-par_switch
+par_switch='1'
 base_val='0'
 
 echo ""

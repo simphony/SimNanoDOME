@@ -33,7 +33,7 @@ class ElenbaasSession(SimWrapperSession):
         """Invoked, when the session is being closed"""
         if self._delete_simulation_files and self._case_dir:
             dir_util.remove_tree(self._case_dir)
-        # Close the running instance of the nanoDOME
+
         if self._initialized:
             self._initialized = False
 

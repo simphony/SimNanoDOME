@@ -2,12 +2,9 @@
 # clear && clear
 
 cd ${0%/*} || exit 1	# Run from this directory
-path='/home/sim/opt/anaconda3/envs/simphony/Simphony/simnanodome/osp/wrappers/simcfd/modules/foam/OpenFOAM-v1906/etc/bashrc'
 par_switch='1'
 base_val='0'
 
-echo "Loading OpenFOAM's environment..."
-. $path
 echo ""
 . $WM_PROJECT_DIR/bin/tools/RunFunctions		# Run functions
 

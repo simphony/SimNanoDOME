@@ -163,7 +163,7 @@ def _rad_ar(T):
     return np.asarray(res)
 
 def elen_run(elen_dict,prop_dir,out_dir):
-        print("Running Elenbaas...")
+        # print("Running Elenbaas...")
         # Import simulation settings
 
         ar = elen_dict.get("Ar")
