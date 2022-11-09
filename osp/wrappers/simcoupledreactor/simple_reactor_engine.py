@@ -6,7 +6,7 @@ import numpy as np, os
 
 class simple_reactor_engine:
 
-    def set_domain(self,n_cells,L,precursor_inlet_frac):
+    def set_domain(self,n_cells,L,cbnd):
 
         self.AMU = 1.660538921e-27
 
@@ -16,11 +16,11 @@ class simple_reactor_engine:
         self.p_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"data/p.csv")
 
         # Set the parameters for the solver
-        self.nodes = n_cells + 2
-        self.deltax = L/(n_cells+1)
+        self.nodes = n_cells + 2;
+        self.deltax = L/(n_cells+1);
         self.t_old = 0.
         self.c_old = 0.
-        self.cbnd = precursor_inlet_frac
+        self.cbnd = cbnd
 
         # Generate the mesh
         self.pos = []

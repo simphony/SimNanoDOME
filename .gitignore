@@ -2,11 +2,6 @@
 *.zip
 c_test
 nanolib/
-cfd-*/
-elenbaas-*/
-nanodome-*/
-.coverage
-.vscode/
 
 # # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -14,9 +14,6 @@ FoamFile
 	object		controlDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-endIt 0;
-
 application				rhoSimpleFoam;
 
 startFrom				startTime;
@@ -25,7 +22,7 @@ startTime				0;
 
 stopAt					endTime;
 
-endTime					$endIt;
+endTime					2500; //10; //10000;
 
 deltaT					1;
 

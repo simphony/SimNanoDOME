@@ -2,7 +2,7 @@
 @author: Giorgio La Civita, UNIBO DIN
 """
 
-import os, subprocess, psutil, sys, shutil
+import os, subprocess, psutil, zipfile
 import numpy as np
 from distutils import dir_util
 
@@ -23,14 +23,24 @@ class CFDSession(SimWrapperSession):
         # Engine specific initializations
         self._initialized = False
         self._case_dir = None
+        # self._case_files =  os.path.abspath(
+        #                     os.path.join(os.getcwd(),
+        #                                  os.pardir,
+        #                                  "osp/wrappers/simcfd/cases/nanodome/"))
+        # self._foam_core = os.path.abspath(
+        #                     os.path.join(os.getcwd(),
+        #                                  os.pardir,
+        #                                  "osp/wrappers/simcfd/modules/foam/OpenFOAM-v1906"))
         self._case_files = os.path.join(
             os.path.dirname(__file__),
             "cases", case
             )
-
-        # Check if OpenFOAM is loaded
-        if not shutil.which("rhoSimpleFoam"):
-            raise SystemError("No OpenFOAM environment loaded!")
+        self._foam_core = os.path.join(
+            os.path.dirname(__file__), "modules/foam/OpenFOAM-v1906"
+            )
+        self._load_path = os.path.join(
+            self._foam_core,"etc/bashrc"
+            )
 
     def __str__(self):
         return "OpenFoam session for nanoparticle synthesis"
@@ -45,7 +55,7 @@ class CFDSession(SimWrapperSession):
 
     # OVERRIDE
     def _run(self, root_cuds_object):
-        """Call the run command of the engine based on simulation type (standalone or linked)."""
+        """Call the run command of the engine based on simulation type (standalone, linked or coupled)."""
 
         if self._initialized:
 
@@ -94,6 +104,14 @@ class CFDSession(SimWrapperSession):
         pass
 
     def _initialize(self, root_cuds_object, added):
+        """Initialize solver for a given use case"""
+
+        #Check if Foam has been installed
+        foam_install_dir = os.path.join( os.path.dirname(__file__), "modules/foam/")
+        foam_install_zip = os.path.join( os.path.dirname(__file__), "modules/foam.zip")
+        if not os.path.exists(foam_install_dir):
+            with zipfile.ZipFile(foam_install_zip, 'r') as zip_ref:
+                zip_ref.extractall(foam_install_dir)
 
         # Initialize the solver
         self._case_dir = os.path.join(os.getcwd(),
@@ -105,6 +123,8 @@ class CFDSession(SimWrapperSession):
         self._reactor = self._source.get(oclass=onto.nanoReactor)[0]
 
         # Get blockmesh parameters from CUDS
+        accuracy_level = root_cuds_object.get(oclass=onto.AccuracyLevel)[0]
+
         diameter, length, inlet_diameter = self._get_property(self._reactor.get( \
                               oclass=onto.CylindricalReactorDimensions)[0], \
                                 ["Diameter","Length","Inlet Diameter"])
@@ -119,21 +139,10 @@ class CFDSession(SimWrapperSession):
         self._write_dict({"pchamb ": str(p)}, "p_template", "p", "0")
 
         # Create the input file for the blockMesh
-        self._create_blockmesh(diameter, length, inlet_diameter)
+        self._create_blockmesh(accuracy_level, diameter, length, inlet_diameter)
 
         # Create controlDict
-        params = dict()
-        try:
-            self.test
-        except:
-            self.test = False
-
-        if self.test == True:
-            #Nothing changes on testing level. It only reduces the testing time.
-            params['endIt'] = "2"
-        else:
-            params['endIt'] = "2500"
-
+        params = {}
         self._write_dict(params,
                          "controlDict_template",
                          "controlDict",
@@ -147,7 +156,7 @@ class CFDSession(SimWrapperSession):
 
         if available_threads == 1:
             par_switch = 0
-            self._create_launcher(par_switch)
+            self._create_launcher(self._load_path,par_switch)
         else:
             par_switch = 1
             # Create the input file for decomposePar
@@ -163,7 +172,7 @@ class CFDSession(SimWrapperSession):
                              "decomposeParDict_template",
                              "decomposeParDict",
                              "system")
-            self._create_launcher(par_switch)
+            self._create_launcher(self._load_path,par_switch)
 
         # Get the plasma properties
         plasma = self._source.get(oclass=onto.Plasma)[0]
@@ -234,8 +243,9 @@ class CFDSession(SimWrapperSession):
 
         return der
 
-    def _create_launcher(self, par_switch):
+    def _create_launcher(self, load_path, par_switch):
         run_params = dict()
+        run_params["path"] = load_path
         run_params["par_switch"] = par_switch
         prep_params = run_params.copy()
         # Write the OpenFOAM's environment loader script
@@ -287,9 +297,20 @@ class CFDSession(SimWrapperSession):
             for line in logs:
                 print(line)
 
-    def _create_blockmesh(self, diameter, length, inlet_diameter):
+    def _create_blockmesh(self, accuracy_level, diameter, length, inlet_diameter):
         # Parameters for the blockMesh generation
         mesh_params = dict()
+        # # Set accuracy level
+        # # medium by default
+        # if accuracy_level.is_a(onto.HighAccuracyLevel):
+        #     self._deltax = 0.15
+        #     self._deltaz = 0.45
+        # elif accuracy_level.is_a(onto.LowAccuracyLevel):
+        #     self._deltax = 0.45
+        #     self._deltaz = 0.65
+        # else:
+        #     self._deltax = 0.3
+        #     self._deltaz = 0.55
         # Fixed mesh generation parameters
         deltax = 0.175 #0.15
         deltaz = 0.1 #0.1
@@ -376,9 +397,12 @@ class CFDSession(SimWrapperSession):
                 U_found = False
 
         if len(stream_paths) != 0:
+            print("Streamfiles exported.")
+            print("")
+
             return stream_paths
         else:
-            raise ValueError("CFD simulation crashed or streamline not found. No streamfiles exported.")
+            raise ValueError("CFD simulation crashed. No streamfiles exported.")
 
     def _import_stream_file(self,filename):
         "Imports a series of streamlines data from an OpenFOAM CFD simulation."
@@ -396,8 +420,7 @@ class CFDSession(SimWrapperSession):
                 elif lnstr[0]=="\n":
                     pass
                 else:
-                    datas.append(lnstr.astype(float))
-            fl.close()
+                    datas.append(lnstr.astype(np.float))
         return np.asarray(datas)
 
     def _create_stream_sets(self, inlet_diameter):
