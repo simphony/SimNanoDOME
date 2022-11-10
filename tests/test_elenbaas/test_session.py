@@ -3,7 +3,7 @@
 import unittest,os
 from uuid import UUID
 
-from common import generate_cuds, get_key_simulation_cuds
+from .common import generate_cuds, get_key_simulation_cuds
 from osp.core.cuds import Cuds
 from osp.core.namespaces import nanofoam as onto
 from osp.core.utils import delete_cuds_object_recursively

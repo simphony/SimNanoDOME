@@ -6,7 +6,7 @@ import unittest
 from osp.core.namespaces import nanofoam as onto
 from osp.core.cuds import Cuds
 
-from common import generate_cuds, get_key_simulation_cuds
+from .common import generate_cuds, get_key_simulation_cuds
 from osp.wrappers.simcoupledreactor.coupledreactorsession import \
     CoupledReactorSession
 from osp.wrappers.simnanodome.nanosession import NanoDOMESession
