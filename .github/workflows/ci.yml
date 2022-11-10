@@ -8,9 +8,9 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
-      - name: tox
+      - name: unittest
         run: |
           pip install -e .
           pico install ontology.simnanofoam.yml
           cd tests
-          python -m unittest 
+          python -m unittest -v
