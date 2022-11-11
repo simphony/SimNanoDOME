@@ -5,7 +5,7 @@ on: pull_request
 jobs:
 
   testing:
-    runs-on: self-hosted
+    runs-on: [self-hosted, simnanodome]
     steps:
       - uses: actions/checkout@v3
       - name: unittest
