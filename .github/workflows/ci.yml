@@ -11,8 +11,8 @@ jobs:
       - name: unittest
         run: |
           mkdir -p /app/_work/SimNanoDOME/SimNanoDOME/osp/wrappers/simnanodome/nanolib
-          ln -f /home/simdomeuser/build/ontodome/libontodome.so.1 /app/_work/SimNanoDOME/SimNanoDOME/osp/wrappers/simnanodome/nanolib/libontodome.so
+          ln -sf /home/simdomeuser/build/ontodome/libontodome.so.1 /app/_work/SimNanoDOME/SimNanoDOME/osp/wrappers/simnanodome/nanolib/libontodome.so
           pip install -e .
-          pico install ontology.simnanofoam.yml
+          pico install --overwrite ontology.simnanofoam.yml
           cd tests
           python -m unittest -v
