@@ -87,5 +87,10 @@ def get_key_simulation_cuds(wrapper: Cuds) -> \
     key_cuds = dict()
     key_cuds['source'] = wrapper.get(oclass=onto.PlasmaSource)[0]
     key_cuds['reactor'] = key_cuds['source'].get(oclass=onto.nanoReactor)[0]
+    key_cuds['prec_type'] = key_cuds['source'].get(oclass=onto.SolidPrecursor)[0].get(oclass=onto.Type)[0]
+
+    psds = key_cuds['reactor'].get(oclass=onto.NanoParticleSizeDistribution)
+    key_cuds['primaries'] = [el for el in psds if el.name == 'Primaries'][0]
+    key_cuds['particles'] = [el for el in psds if el.name == 'Particles'][0]
 
     return key_cuds

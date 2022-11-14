@@ -151,7 +151,7 @@ class TestNanoEngine(unittest.TestCase):
         cs = nano_engine.run_network(nano_engine, tf, pp, TT, vels, cs, specs)
         self.assertGreaterEqual(cs_0, cs)
 
-    def test_nano_engine_system_low(self):
+    def test_nano_run_system_low(self):
         """Tests the `nano_run` method with Low accuracy."""
         with NanoDOMESession(delete_simulation_files=True) as session:
             wrapper = onto.NanoFOAMWrapper(session=session)
@@ -177,7 +177,7 @@ class TestNanoEngine(unittest.TestCase):
             self.assertGreater(numb,0)
             self.assertGreater(vol,0)
 
-    def test_nano_engine_system_medium(self):
+    def test_nano_run_system_medium(self):
         """Tests the `nano_run` method with Medium accuracy."""
         with NanoDOMESession(delete_simulation_files=True) as session:
             wrapper = onto.NanoFOAMWrapper(session=session)
@@ -198,7 +198,7 @@ class TestNanoEngine(unittest.TestCase):
             self.assertGreater(len(particles), 0)
             self.assertGreater(len(primaries), 0)
 
-    def test_nano_engine_system_low_linked(self):
+    def test_nano_run_system_low_linked(self):
         """Tests the `nano_run` method with linked-like input."""
         with NanoDOMESession(delete_simulation_files=True) as session:
             wrapper = onto.NanoFOAMWrapper(session=session)
@@ -230,6 +230,14 @@ class TestNanoSession(unittest.TestCase):
     API, such methods have been already tested in `test_session.py`.
     """
     session: NanoDOMESession
+    template_wrapper: Cuds
+
+    def setUp(self) -> None:
+        """Generates the necessary CUDS to represent a simulation.
+
+        The results are stored in `self.template_wrapper`.
+        """
+        self.template_wrapper = generate_cuds()
 
     def test_get_obj(self):
         """Tests the `_get_obj` method."""
@@ -300,6 +308,133 @@ class TestNanoSession(unittest.TestCase):
                 [16., 18., 17.],
                 [x for x in res]
             )
+
+    def test_nano_run(self):
+        """Tests the `_nano_run` method."""
+
+        key_cuds = get_key_simulation_cuds(self.template_wrapper)
+
+        with NanoDOMESession(delete_simulation_files=True) as session:
+            wrapper = onto.NanoFOAMWrapper(session=session)
+
+            reactor = key_cuds['reactor']
+            source = key_cuds['source']
+
+            accuracy_level = onto.LowAccuracyLevel()
+
+            # Results CUDS
+            particles = onto.NanoParticleSizeDistribution(name = 'Particles')
+            primaries = onto.NanoParticleSizeDistribution(name = 'Primaries')
+            reactor.add(particles, primaries, rel = onto.hasPart)
+            wrapper.add(source, accuracy_level)
+
+            # Run the session
+            ##########################################################
+            session.test = True
+            session.eng.tf = 1e-8
+            session.run()
+
+
+    def test_nano_coupled_run(self):
+        """Tests the `_nano_coupled_run` method."""
+        with NanoDOMESession(delete_simulation_files=True) as session:
+            wrapper = onto.NanoFOAMWrapper(session=session)
+
+            # Set the accuracy level
+            accuracy_level = onto.MediumAccuracyLevel()
+
+            # Create precursor's species
+            precursor = onto.SolidPrecursor()
+            precursor_feed_rate = onto.FeedRate(value=1e-3, unit='kg/s',
+                                                name='Feed Rate')
+            precursor_type = onto.Type(name='Si')
+            precursor.add(precursor_feed_rate,
+                        precursor_type,
+                        rel=onto.hasProperty)
+
+            # Create plasma's source operative conditions
+            source = onto.PlasmaSource()
+            input_power = onto.InputPower(value=15000., unit='W',
+                                        name='Input Power')
+            flow_rate = onto.FlowRate(value=60.,
+                                    unit='slpm',
+                                    name='Flow Rate')
+            source.add(input_power, flow_rate, rel=onto.hasProperty)
+            source.add(precursor, rel=onto.hasPart)
+
+            # Create plasma's composition
+            comp = onto.GasComposition()
+            arf = onto.MolarFraction(value=1., name='Ar', unit='~')
+            h2f = onto.MolarFraction(value=0., name='H2', unit='~')
+            n2f = onto.MolarFraction(value=0., name='N2', unit='~')
+            o2f = onto.MolarFraction(value=0., name='O2', unit='~')
+            comp.add(arf, h2f, n2f, o2f, rel=onto.hasPart)
+
+            # Set reactor's dimensions
+            reactor_geom = onto.CylindricalReactorDimensions()
+            diameter = onto.Diameter(value=0.3, unit='m', name='Diameter')
+            length = onto.Length(value=1.5, unit='m', name='Length')
+            inlet_diameter = onto.InletDiameter(value=13e-3,
+                                                unit='m',
+                                                name='Inlet Diameter')
+            reactor_geom.add(diameter,
+                            length,
+                            inlet_diameter,
+                            rel=onto.hasPart)
+
+            # Process' CUDS
+            reactor = onto.nanoReactor()
+            reactor.add(reactor_geom, rel=onto.hasPart)
+
+            cells = []
+            cells_number = 5
+            temps = [1600, 1000, 800, 600, 500]
+            vels = [110, 60, 30, 4, 2]
+            for idx in range(cells_number):
+                cell = onto.reactorCell(name=str(idx))
+
+                comp = onto.GasComposition()
+
+                if idx == 0:
+                    prec_mol = onto.MolarFraction(value = 0.05 , name = precursor_type.name , unit = '~')
+                    arf = onto.MolarFraction(value = 0.95, name = 'Ar', unit = '~')
+                else:
+                    prec_mol = onto.MolarFraction(value = 0. , name = precursor_type.name , unit = '~')
+                    arf = onto.MolarFraction(value = 1., name = 'Ar', unit = '~')
+                h2f = onto.MolarFraction(value=0., name='H2', unit='~')
+                n2f = onto.MolarFraction(value=0., name='N2', unit='~')
+                o2f = onto.MolarFraction(value=0., name='O2', unit='~')
+
+                comp.add(prec_mol, arf, h2f, n2f, o2f, rel=onto.hasPart)
+
+                primaries = onto.NanoParticleSizeDistribution(name='Primaries')
+                particles = onto.NanoParticleSizeDistribution(name='Particles')
+
+                cell.add(primaries, particles, rel=onto.hasPart)
+
+                cell.add(onto.Velocity(value=vels[idx], name=str(idx), unit='m/s'))
+
+                # Set thermodynamic conditions
+                thermo_cond = onto.ThermoCond()
+                pressure = onto.Pressure(value=101325, unit='m^2/s^2',
+                                        name='Pressure')
+                temp = onto.Temperature(value=temps[idx], unit='K',
+                                        name='Temperature')
+                thermo_cond.add(pressure, temp, rel=onto.hasPart)
+
+                cell.add(thermo_cond, comp, rel=onto.hasPart)
+                cells.append(cell)
+                reactor.add(cell)
+
+            time = onto.Time(value=0., unit="s", name="Simulation Time")
+            dt = onto.Time(value=1e-8, unit="s", name="Current Timestep")
+            reactor.add(time, dt, rel=onto.hasPart)
+            source.add(reactor, rel=onto.hasProperty)
+
+            wrapper.add(source, accuracy_level)
+
+            session.run()
+
 
 
 if __name__ == '__main__':

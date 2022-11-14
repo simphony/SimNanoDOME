@@ -116,7 +116,7 @@ class CFDSession(SimWrapperSession):
         # Set thermodynamic conditions
         p = self._get_property(self._reactor.get( \
                                 oclass=onto.ThermoCond)[0],["Pressure"])
-        self._write_dict({"pchamb ": str(p)}, "p_template", "p", "0")
+        self._write_dict({"pchamb": str(p)}, "p_template", "p", "0")
 
         # Create the input file for the blockMesh
         self._create_blockmesh(diameter, length, inlet_diameter)

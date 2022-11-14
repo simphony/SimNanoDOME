@@ -160,7 +160,65 @@ class TestCFDSession(unittest.TestCase):
             self.assertTrue(filecmp.cmp(os.path.dirname(os.path.realpath(__file__))+"/validation/streamSets",
                                             session._case_dir+"/system/streamSets"))
 
+    def test_write_script(self):
+        """Tests the `_write_script` method."""
+        with CFDSession(delete_simulation_files=True) as session:
+            wrapper = onto.NanoFOAMWrapper(session=session)
 
+            os.makedirs(os.path.dirname(os.path.realpath(__file__))+"/tmp/templates")
+            session._case_dir = os.path.dirname(os.path.realpath(__file__))+"/tmp"
+            shutil.copyfile(os.path.dirname(os.path.realpath(__file__))+"/data/Allrun_template",session._case_dir+"/templates/Allrun_template")
+
+            run_params = dict()
+            run_params["par_switch"] = 1
+
+            session._write_script(run_params,
+                            "Allrun_template", "Allrun","")
+
+            self.assertTrue(filecmp.cmp(os.path.dirname(os.path.realpath(__file__))+"/validation/Allrun",
+                                            session._case_dir+"/Allrun"))
+
+    def test_write_dict(self):
+        """Tests the `_write_dict` method."""
+        with CFDSession(delete_simulation_files=True) as session:
+            wrapper = onto.NanoFOAMWrapper(session=session)
+
+            os.makedirs(os.path.dirname(os.path.realpath(__file__))+"/tmp/templates")
+            os.makedirs(os.path.dirname(os.path.realpath(__file__))+"/tmp/0")
+            session._case_dir = os.path.dirname(os.path.realpath(__file__))+"/tmp"
+            shutil.copyfile(os.path.dirname(os.path.realpath(__file__))+"/data/p_template",session._case_dir+"/templates/p_template")
+
+            session._write_dict({"pchamb": str(101325)}, "p_template", "p", "0")
+
+            self.assertTrue(filecmp.cmp(os.path.dirname(os.path.realpath(__file__))+"/validation/p",
+                                            session._case_dir+"/0/p"))
+
+    def test_write_set(self):
+        """Tests the `_write_set` method."""
+        with CFDSession(delete_simulation_files=True) as session:
+            wrapper = onto.NanoFOAMWrapper(session=session)
+
+            os.makedirs(os.path.dirname(os.path.realpath(__file__))+"/tmp/templates")
+            os.makedirs(os.path.dirname(os.path.realpath(__file__))+"/tmp/system")
+            session._case_dir = os.path.dirname(os.path.realpath(__file__))+"/tmp"
+            shutil.copyfile(os.path.dirname(os.path.realpath(__file__))+"/data/streamSets_template",session._case_dir+"/templates/streamSets_template")
+
+            coords = np.linspace(1e-6,0.5*13e-3-1e-6,num=5)
+            for ii,xcoo in enumerate(coords, start=1):
+                point = str((xcoo, 0, 1e-6)).replace(',', '')
+                # Parameters for streamSets file
+                stream_params = dict()
+                stream_params["stream"] = "stream" + str(ii)
+                stream_params["points"] = "(" + point + ")"
+
+                # Write the streamSets input file
+                session._write_set(stream_params,
+                                "streamSets_template",
+                                "streamSets",
+                                "system")
+
+            self.assertTrue(filecmp.cmp(os.path.dirname(os.path.realpath(__file__))+"/validation/streamSets",
+                                            session._case_dir+"/system/streamSets"))
 
 if __name__ == '__main__':
     unittest.main()

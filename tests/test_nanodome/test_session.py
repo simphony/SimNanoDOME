@@ -58,6 +58,8 @@ class TestWrapper(unittest.TestCase):
         """
         key_cuds = get_key_simulation_cuds(self.template_wrapper)
         source = key_cuds['source']
+        reactor = key_cuds['reactor']
+        particles = key_cuds['particles']
 
         with NanoDOMESession(delete_simulation_files=True) as session:
             wrapper = onto.NanoFOAMWrapper(session=session)
@@ -70,6 +72,18 @@ class TestWrapper(unittest.TestCase):
             simulation_dir = session._case_dir
 
             self.assertTrue(session._initialized)
+
+            # Get the results
+            res = wrapper.get(source.uid).get(reactor.uid)
+            particles = res.get(particles.uid)
+
+            diam = particles.get(oclass=onto.Bin)[0].get(oclass=onto.ParticleDiameter)[0].value
+            volp = particles.get(oclass=onto.Bin)[0].get(oclass=onto.ParticleVolumePercentage)[0].value
+            numb = particles.get(oclass=onto.Bin)[0].get(oclass=onto.ParticleNumberDensity)[0].value
+
+            self.assertGreater(diam, 0.)
+            self.assertGreater(volp, 0.)
+            self.assertGreater(numb, 0.)
 
         self.assertFalse(os.path.isdir(simulation_dir))
 

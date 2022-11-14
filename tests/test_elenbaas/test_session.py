@@ -1,6 +1,6 @@
 """Tests the SimPhoNy wrapper API methods."""
 
-import unittest,os
+import unittest, os, filecmp
 from uuid import UUID
 
 from .common import generate_cuds, get_key_simulation_cuds
@@ -68,6 +68,13 @@ class TestWrapper(unittest.TestCase):
             simulation_dir = session._case_dir
 
             self.assertTrue(session._initialized)
+
+            plasma = wrapper.get(source.uid).get(oclass=onto.Plasma)[0]
+
+            # Validate results
+            for prop in plasma.get():
+                val_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'validation',prop.path.split('/')[-1])
+                self.assertTrue(filecmp.cmp(prop.path,val_path))
 
         self.assertFalse(os.path.isdir(simulation_dir))
 

@@ -23,8 +23,8 @@ mode = 'nanodome'
 #####################################################################
 
 # Set the accuracy level
-# accuracy_level = onto.LowAccuracyLevel()
-accuracy_level = onto.MediumAccuracyLevel()
+accuracy_level = onto.LowAccuracyLevel()
+# accuracy_level = onto.MediumAccuracyLevel()
 # accuracy_level = onto.HighAccuracyLevel()
 
 # Create precursor's species
@@ -350,7 +350,7 @@ elif mode == 'linked':
                 prim_vol_perc = onto.ParticleVolumePercentage(
                     value=vol_frac, unit='m3/m3', name='Mean particles volume percentage')
 
-                result = onto.Bin()
+                result = onto.Bin(name="PSD bin")
                 result.add(mean_prim_size, prim_numb_dens, prim_vol_perc,
                             rel=onto.hasProperty)
                 particles = onto.NanoParticleSizeDistribution(name = 'Particles')
@@ -394,7 +394,7 @@ elif mode == 'linked':
 
                 particles = onto.NanoParticleSizeDistribution(name = 'Particles')
                 for idx,numb in enumerate(pa_counts):
-                    result = onto.Bin()
+                    result = onto.Bin(name="PSD bin")
                     size_dist = onto.ParticleNumberDensity(value=numb,
                                         unit="#/m3",name="Size distribution")
                     size_class = onto.ParticleDiameter(value=pa_bins[idx],
@@ -407,7 +407,7 @@ elif mode == 'linked':
 
                 primaries = onto.NanoParticleSizeDistribution(name = 'Primaries')
                 for idx,numb in enumerate(pr_counts):
-                    result = onto.Bin()
+                    result = onto.Bin(name="PSD bin")
                     size_dist = onto.ParticleNumberDensity(value=numb,
                                         unit="#/m3",name="Size distribution")
                     size_class = onto.ParticleDiameter(value=pr_bins[idx],

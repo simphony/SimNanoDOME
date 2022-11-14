@@ -76,9 +76,16 @@ class TestReactorEngine(unittest.TestCase):
         self.assertEqual(28.085, self.reactor_engine.get_molar_mass('Si'))
         self.assertEqual(39.948, self.reactor_engine.get_molar_mass('Ar'))
 
+    def test_dt(self):
+        self.reactor_engine.set_domain(self.n_cells, self.L, self.cbnd)
+
+        dt_calc = self.reactor_engine.dt()
+
+        self.assertEqual(dt_calc, 7.258218053409755e-05)
+
     def test_run(self):
         """Tests the `run` method."""
-        self.reactor_engine.set_domain(self.n_cells,self. L, self.cbnd)
+        self.reactor_engine.set_domain(self.n_cells, self.L, self.cbnd)
         cs = np.zeros(self.reactor_engine.nodes)
         cs[0] = self.cbnd
         cs_n, U, T, p, dt = self.reactor_engine.run(1e-2, cs)

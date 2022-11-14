@@ -171,7 +171,7 @@ def elen_run(elen_dict,prop_dir,out_dir):
         n2 = elen_dict.get("N2")
         o2 = elen_dict.get("O2")
         vfr0 = elen_dict.get("Flow Rate")
-        Pow = elen_dict.get("Input Power") * 0.35 #reduced by 30% for ICP torches
+        Pow = elen_dict.get("Input Power") * 0.35 #reduced by 35% for ICP torches
         R = elen_dict.get("Inlet Radius")
         Twall = 500.
         PL = 6.5714*R

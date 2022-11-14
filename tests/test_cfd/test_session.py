@@ -60,6 +60,8 @@ class TestWrapper(unittest.TestCase):
         key_cuds = get_key_simulation_cuds(self.template_wrapper)
         source = key_cuds['source']
         accuracy_level = key_cuds['accuracy_level']
+        reactor = key_cuds['reactor']
+        tcond = key_cuds['tcond']
 
         with ElenbaasSession(delete_simulation_files=True) as elen:
             # Run elenbaas
@@ -82,6 +84,11 @@ class TestWrapper(unittest.TestCase):
                 sim_dir = session._case_dir
 
                 self.assertTrue(session._initialized)
+
+                streams = wrapper.get(source.uid).get(reactor.uid).get(tcond.uid) \
+                        .get(oclass=onto.TemperatureStreamline)
+
+                self.assertTrue(len(streams),5)
 
             self.assertFalse(os.path.isdir(sim_dir))
 

@@ -1,6 +1,6 @@
 """Unit test examples, both at the "system" level and the "method" level."""
 
-import unittest, os
+import unittest, os, shutil, filecmp
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -81,6 +81,36 @@ class TestElenbaasEngine(unittest.TestCase):
     def test_viscosity(self):
         """Tests the `_viscosity` method."""
         self.assertEqual(3.45126e-05, self.engine._viscosity(self.T,self.data_tra))
+
+    def test_elen_run(self):
+        """Tests the `elen_run` method."""
+
+        prop_dict = dict()
+        prop_dict["Ar"] = 1.0
+        prop_dict["H2"] = 0.0
+        prop_dict["N2"] = 0.0
+        prop_dict["O2"] = 0.0
+        prop_dict["Input Power"] = 15000
+        prop_dict["Flow Rate"] = 60
+        prop_dict["Inlet Radius"] = 0.5*13e-3
+
+        mat_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'data')
+        tmp_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'tmp')
+
+        if os.path.isdir(tmp_path):
+            shutil.rmtree(tmp_path)
+        os.mkdir(tmp_path)
+
+        self.engine.elen_run(prop_dict, mat_path, tmp_path)
+
+        # Validate results
+        for prop in os.listdir(tmp_path):
+            prop_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'tmp',prop)
+            val_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'validation',prop)
+            self.assertTrue(filecmp.cmp(prop_path,val_path))
+
+        shutil.rmtree(tmp_path)
+
 
 class TestElenbaasSession(unittest.TestCase):
     """Tests the ElenbaasSession.

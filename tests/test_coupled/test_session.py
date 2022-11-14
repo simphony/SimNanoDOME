@@ -59,6 +59,9 @@ class TestWrapper(unittest.TestCase):
         """
         key_cuds = get_key_simulation_cuds(self.template_wrapper)
         source = key_cuds['source']
+        reactor = key_cuds['reactor']
+        cells = key_cuds['cells']
+        prec_type = key_cuds['precursor_type']
         accuracy_level = key_cuds['accuracy_level']
 
         with CoupledReactorSession(delete_simulation_files=True) as session:
@@ -67,6 +70,18 @@ class TestWrapper(unittest.TestCase):
             session.run()
 
             self.assertTrue(session._initialized)
+
+            source.update(wrapper.get(source.uid).get(reactor.uid))
+
+            cell_counter = 0
+            for cl in cells:
+                    t_fracs = cl.get(oclass=onto.GasComposition)[0].get(oclass=onto.MolarFraction)
+                    for mol in t_fracs:
+                        if mol.name is prec_type.name:
+                            cell_counter +=1
+                            self.assertGreaterEqual(mol.value, 0.)
+
+            self.assertEqual(cell_counter, 5)
 
 
 

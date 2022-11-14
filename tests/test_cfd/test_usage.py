@@ -146,7 +146,7 @@ class TestWrapper(unittest.TestCase):
                 prim_vol_perc = onto.ParticleVolumePercentage(
                     value=vol_frac, unit='m3/m3', name='Mean particles volume percentage')
 
-                result = onto.Bin()
+                result = onto.Bin(name="PSD bin")
                 result.add(mean_prim_size, prim_numb_dens, prim_vol_perc,
                             rel=onto.hasProperty)
                 particles = onto.NanoParticleSizeDistribution(name = 'Particles')
@@ -250,7 +250,7 @@ class TestWrapper(unittest.TestCase):
 
                 particles = onto.NanoParticleSizeDistribution(name = 'Particles')
                 for idx,numb in enumerate(pa_counts):
-                    result = onto.Bin()
+                    result = onto.Bin(name="PSD bin")
                     size_dist = onto.ParticleNumberDensity(value=numb,
                                         unit="#/m3",name="Size distribution")
                     size_class = onto.ParticleDiameter(value=pa_bins[idx],
@@ -263,7 +263,7 @@ class TestWrapper(unittest.TestCase):
 
                 primaries = onto.NanoParticleSizeDistribution(name = 'Primaries')
                 for idx,numb in enumerate(pr_counts):
-                    result = onto.Bin()
+                    result = onto.Bin(name="PSD bin")
                     size_dist = onto.ParticleNumberDensity(value=numb,
                                         unit="#/m3",name="Size distribution")
                     size_class = onto.ParticleDiameter(value=pr_bins[idx],
