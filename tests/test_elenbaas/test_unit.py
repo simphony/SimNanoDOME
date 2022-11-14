@@ -1,6 +1,9 @@
 """Unit test examples, both at the "system" level and the "method" level."""
 
-import unittest, os, shutil, filecmp
+import csv
+import os
+import shutil
+import unittest
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -105,9 +108,20 @@ class TestElenbaasEngine(unittest.TestCase):
 
         # Validate results
         for prop in os.listdir(tmp_path):
-            prop_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'tmp',prop)
-            val_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'validation',prop)
-            self.assertTrue(filecmp.cmp(prop_path,val_path))
+            prop_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tmp',prop)
+            val_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'validation',prop)
+            # detect csv delimiters
+            with open(prop_path) as file:
+                sniffer = csv.Sniffer()
+                dialect = sniffer.sniff(file.readline())
+                delimiter1 = str(dialect.delimiter)
+            with open(val_path) as file:
+                sniffer = csv.Sniffer()
+                dialect = sniffer.sniff(file.readline())
+                delimiter2 = str(dialect.delimiter)
+            file1 = np.genfromtxt(prop_path, delimiter=delimiter1)
+            file2 = np.genfromtxt(val_path, delimiter=delimiter2)
+            self.assertTrue(np.allclose(file1, file2))
 
         shutil.rmtree(tmp_path)
 
