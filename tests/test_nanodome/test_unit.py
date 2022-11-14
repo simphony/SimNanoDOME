@@ -433,6 +433,7 @@ class TestNanoSession(unittest.TestCase):
 
             wrapper.add(source, accuracy_level)
 
+            session.test = True
             session.run()
 
 
