@@ -1,0 +1,125 @@
+stream1
+{
+// Mandatory entries (unmodifiable)
+type            streamLine;
+libs            ("fieldFunctionObjects");
+
+// Mandatory entries (runtime modifiable)
+U               U;
+fields          (U T);
+setFormat       csv;
+lifeTime        10000;
+cloud           particleTracks;
+seedSampleSet
+{
+type        cloud;
+points ((1e-06 0 1e-06));
+axis        distance;
+}
+
+// Optional entries (runtime modifiable)
+trackForward yes;
+nSubCycle       30;
+interpolationScheme cellPoint;
+writeControl    onEnd;
+}
+stream2
+{
+// Mandatory entries (unmodifiable)
+type            streamLine;
+libs            ("fieldFunctionObjects");
+
+// Mandatory entries (runtime modifiable)
+U               U;
+fields          (U T);
+setFormat       csv;
+lifeTime        10000;
+cloud           particleTracks;
+seedSampleSet
+{
+type        cloud;
+points ((0.0016254999999999998 0 1e-06));
+axis        distance;
+}
+
+// Optional entries (runtime modifiable)
+trackForward yes;
+nSubCycle       30;
+interpolationScheme cellPoint;
+writeControl    onEnd;
+}
+stream3
+{
+// Mandatory entries (unmodifiable)
+type            streamLine;
+libs            ("fieldFunctionObjects");
+
+// Mandatory entries (runtime modifiable)
+U               U;
+fields          (U T);
+setFormat       csv;
+lifeTime        10000;
+cloud           particleTracks;
+seedSampleSet
+{
+type        cloud;
+points ((0.00325 0 1e-06));
+axis        distance;
+}
+
+// Optional entries (runtime modifiable)
+trackForward yes;
+nSubCycle       30;
+interpolationScheme cellPoint;
+writeControl    onEnd;
+}
+stream4
+{
+// Mandatory entries (unmodifiable)
+type            streamLine;
+libs            ("fieldFunctionObjects");
+
+// Mandatory entries (runtime modifiable)
+U               U;
+fields          (U T);
+setFormat       csv;
+lifeTime        10000;
+cloud           particleTracks;
+seedSampleSet
+{
+type        cloud;
+points ((0.0048744999999999995 0 1e-06));
+axis        distance;
+}
+
+// Optional entries (runtime modifiable)
+trackForward yes;
+nSubCycle       30;
+interpolationScheme cellPoint;
+writeControl    onEnd;
+}
+stream5
+{
+// Mandatory entries (unmodifiable)
+type            streamLine;
+libs            ("fieldFunctionObjects");
+
+// Mandatory entries (runtime modifiable)
+U               U;
+fields          (U T);
+setFormat       csv;
+lifeTime        10000;
+cloud           particleTracks;
+seedSampleSet
+{
+type        cloud;
+points ((0.006499 0 1e-06));
+axis        distance;
+}
+
+// Optional entries (runtime modifiable)
+trackForward yes;
+nSubCycle       30;
+interpolationScheme cellPoint;
+writeControl    onEnd;
+}

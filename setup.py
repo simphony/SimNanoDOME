@@ -20,6 +20,9 @@ setup(
         'psutil',
         'matplotlib'
     ],
+    tests_require=[
+        'numpy',
+    ],
     packages=find_packages(),
     include_package_data=True,
     python_requires=">=3.9.0",

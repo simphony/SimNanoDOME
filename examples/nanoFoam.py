@@ -17,20 +17,20 @@ from osp.core.utils import pretty_print
 #####################################################################
 # modes supported: elenbaas (elenbaas only), nanodome (nanodome only),
 # cfd (openfoam and elenbaas), linked (nanofoam), coupled (nanocouplefoam)
-mode = 'coupled'
+mode = 'nanodome'
 
 # Create the computational mesh, boundary conditions and properties
 #####################################################################
 
 # Set the accuracy level
-# accuracy_level = onto.LowAccuracyLevel()
-accuracy_level = onto.MediumAccuracyLevel()
+accuracy_level = onto.LowAccuracyLevel()
+# accuracy_level = onto.MediumAccuracyLevel()
 # accuracy_level = onto.HighAccuracyLevel()
 
 # Create precursor's species
 prec = onto.SolidPrecursor()
 prec_feedrate = onto.FeedRate(value = 125/1000/3600, unit = 'kg/s', name = 'Feed Rate')
-prec_type = onto.Type(name = 'Si')
+prec_type = onto.Type(name = 'Fe')
 prec.add(prec_feedrate, prec_type, rel = onto.hasProperty)
 
 # Create plasma's source operative conditions
@@ -231,13 +231,13 @@ elif mode == 'nanodome':
     tcond = onto.ThermoCond()
     pressure = onto.Pressure(value=101325, unit='m^2/s^2', name = 'Pressure')
     temp_grad = onto.TemperatureGradient(value = -1e+7, unit = 'K/s', name = 'Temporal Temperature Gradient')
-    temp = onto.Temperature(value = 3000, unit = 'K', name = 'Temperature')
+    temp = onto.Temperature(value = 2000, unit = 'K', name = 'Temperature')
     tcond.add(pressure, temp, temp_grad, rel = onto.hasPart)
 
     reactor.add(tcond, comp, rel = onto.hasPart)
     source.add(reactor, rel = onto.hasProperty)
 
-    with NanoDOMESession(delete_simulation_files=False) as nano:
+    with NanoDOMESession(delete_simulation_files=True) as nano:
         nanowrapper = onto.NanoFOAMWrapper(session=nano)
 
         # Results CUDS
@@ -276,7 +276,7 @@ elif mode == 'linked':
     reactor.add(tcond, comp, rel = onto.hasPart)
     source.add(reactor, rel = onto.hasProperty)
 
-    with ElenbaasSession(delete_simulation_files=False) as elen:
+    with ElenbaasSession(delete_simulation_files=True) as elen:
 
         # Run elenbaas
         ##########################################################
@@ -289,7 +289,7 @@ elif mode == 'linked':
         plasma = elenwrapper.get(source.uid).get(oclass=onto.Plasma)[0]
         source.add(plasma,rel=onto.hasPart)
 
-        with CFDSession(delete_simulation_files=False) as cfd:
+        with CFDSession(delete_simulation_files=True) as cfd:
 
             # Run cfd
             ##########################################################
@@ -309,7 +309,7 @@ elif mode == 'linked':
             for idx in range(len(streams)):
                 parent_conn, child_conn = multiprocessing.Pipe()
                 p = multiprocessing.Process(target=nano_link, \
-                            args=(False,source,reactor,tcond,streams[idx],child_conn,))
+                            args=(True,source,reactor,tcond,streams[idx],child_conn,))
                 procs.append([p,parent_conn,child_conn])
                 p.start()
 
@@ -339,9 +339,7 @@ elif mode == 'linked':
                         elif data[1] == str(onto.ParticleVolumePercentage):
                             vols.append(data[0])
 
-                # mean_diam = np.average(np.asarray(diams),weights = numbs)
-                # numb_dens = np.average(np.asarray(numbs),weights = numbs)
-                # vol_frac = np.average(np.asarray(vols),weights = numbs)
+
                 mean_diam = np.average(np.asarray(diams))
                 numb_dens = np.average(np.asarray(numbs))
                 vol_frac = np.average(np.asarray(vols))
@@ -352,7 +350,7 @@ elif mode == 'linked':
                 prim_vol_perc = onto.ParticleVolumePercentage(
                     value=vol_frac, unit='m3/m3', name='Mean particles volume percentage')
 
-                result = onto.Bin()
+                result = onto.Bin(name="PSD bin")
                 result.add(mean_prim_size, prim_numb_dens, prim_vol_perc,
                             rel=onto.hasProperty)
                 particles = onto.NanoParticleSizeDistribution(name = 'Particles')
@@ -396,7 +394,7 @@ elif mode == 'linked':
 
                 particles = onto.NanoParticleSizeDistribution(name = 'Particles')
                 for idx,numb in enumerate(pa_counts):
-                    result = onto.Bin()
+                    result = onto.Bin(name="PSD bin")
                     size_dist = onto.ParticleNumberDensity(value=numb,
                                         unit="#/m3",name="Size distribution")
                     size_class = onto.ParticleDiameter(value=pa_bins[idx],
@@ -409,7 +407,7 @@ elif mode == 'linked':
 
                 primaries = onto.NanoParticleSizeDistribution(name = 'Primaries')
                 for idx,numb in enumerate(pr_counts):
-                    result = onto.Bin()
+                    result = onto.Bin(name="PSD bin")
                     size_dist = onto.ParticleNumberDensity(value=numb,
                                         unit="#/m3",name="Size distribution")
                     size_class = onto.ParticleDiameter(value=pr_bins[idx],
@@ -435,7 +433,7 @@ elif mode == 'coupled':
         raise ValueError("This method only works with Medium accuracy level.")
 
     cells = []
-    cells_number = 10
+    cells_number = 5
     for idx in range(cells_number):
         cell = onto.reactorCell(name = str(idx))
 
@@ -467,7 +465,7 @@ elif mode == 'coupled':
         reactor.add(cell)
 
     time = onto.Time(value = 0., unit="s", name="Simulation Time")
-    dt = onto.Time(value = 1e-6, unit="s", name="Current Timestep")
+    dt = onto.Time(value = 1e-8, unit="s", name="Current Timestep")
     reactor.add(time,dt, rel = onto.hasPart)
     source.add(reactor, rel = onto.hasProperty)
 
@@ -475,7 +473,7 @@ elif mode == 'coupled':
     save_step = 5e-5
 
     with CoupledReactorSession(delete_simulation_files=True) as coupled, \
-        NanoDOMESession(delete_simulation_files=False) as nano:
+        NanoDOMESession(delete_simulation_files=True) as nano:
 
         coupledwrapper = onto.NanoFOAMWrapper(session=coupled)
         coupledwrapper.add(source, accuracy_level)
@@ -483,7 +481,8 @@ elif mode == 'coupled':
         nanowrapper = onto.NanoFOAMWrapper(session=nano)
         nanowrapper.add(source, accuracy_level)
 
-        while time.value < 7e-4:
+        tf = 1.1e-6
+        while time.value < tf:
 
             print("Time: ",time.value)
             print("")
@@ -544,7 +543,7 @@ elif mode == 'coupled':
 
             time.value += dt.value
 
-        print("Time: ", time.value)
+        print("Final time: ", time.value)
         print("")
 
 else:

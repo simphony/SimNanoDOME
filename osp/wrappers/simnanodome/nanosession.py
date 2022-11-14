@@ -23,6 +23,7 @@ class NanoDOMESession(SimWrapperSession):
         # Engine specific initializations
         self._initialized = False
         self._case_dir = None
+        self.eng = eng()
 
     def __str__(self):
         return "nanoDOME session for nanoparticle synthesis"
@@ -42,10 +43,20 @@ class NanoDOMESession(SimWrapperSession):
     def _run(self, root_cuds_object):
         """Call the run command of the engine."""
         if self._initialized:
+
+            try:
+                self.test
+            except:
+                self.test = False
+
             # Run nanoDOME
             if self._bool_coupled is False:
+                if self.test:
+                    print('\n RUNNING NANO_RUN', flush=True)
                 self._nano_run(root_cuds_object)
             else:
+                if self.test:
+                    print('\n RUNNING NANO_COUPLED_RUN', flush=True)
                 self._nano_coupled_run(root_cuds_object)
         else:
             raise ValueError("Session not initialized")
@@ -75,8 +86,6 @@ class NanoDOMESession(SimWrapperSession):
         pass
 
     def _initialize(self, root_cuds_object, buffer):
-
-        self.eng = eng()
 
         self._case_dir = os.path.join(os.getcwd(),
                                 "nanodome-%s" % root_cuds_object.uid)
@@ -280,7 +289,6 @@ class NanoDOMESession(SimWrapperSession):
     def _nano_run(self, root_cuds_object):
 
         # Pass the results to the Engine
-        # for dist in self._reactor.get(oclass=onto.NanoParticleSizeDistribution):
         for dist in self._reactor.get(oclass=onto.NanoParticleSizeDistribution):
             if dist.name == 'Particles':
                 self._part_res = dist
@@ -300,7 +308,7 @@ class NanoDOMESession(SimWrapperSession):
                 value=numb_dens, unit='#/m3', name='Mean particles number density')
             prim_vol_perc = onto.ParticleVolumePercentage(
                 value=vol_frac, unit='m3/m3', name='Mean particles volume percentage')
-            result = onto.Bin()
+            result = onto.Bin(name="PSD bin")
             result.add(mean_prim_size, prim_numb_dens, prim_vol_perc,
                         rel=onto.hasProperty)
             self._part_res.add(result, rel=onto.hasPart)
@@ -311,7 +319,7 @@ class NanoDOMESession(SimWrapperSession):
 
             # Create  and fill bins then add them to the SizeDistribution CUDS
             for parti in range(0, len(particles)):
-                result = onto.Bin()
+                result = onto.Bin(name="PSD bin")
 
                 size_class = onto.ParticleDiameter(value=particles[parti][0],
                                     unit="nm",name="Size class")
@@ -324,7 +332,7 @@ class NanoDOMESession(SimWrapperSession):
                 self._part_res.add(result, rel=onto.hasPart)
 
             for prim in range(0, len(primaries)):
-                result = onto.Bin()
+                result = onto.Bin(name="PSD bin")
 
                 size_class = onto.ParticleDiameter(value=primaries[prim][0],
                                     unit="nm",name="Size class")
@@ -395,7 +403,7 @@ class NanoDOMESession(SimWrapperSession):
                 part = self._get_obj(cl,["Particles"])
 
                 for idx2 in range(0, len(prim_psd)):
-                    result = onto.Bin()
+                    result = onto.Bin(name="PSD bin")
 
                     size_class = onto.ParticleDiameter(value=prim_psd[idx2][0],
                                         unit="nm",name="Size class")
@@ -406,7 +414,7 @@ class NanoDOMESession(SimWrapperSession):
                     prim.add(result, rel=onto.hasPart)
 
                 for idx3 in range(0, len(part_psd)):
-                    result = onto.Bin()
+                    result = onto.Bin(name="PSD bin")
 
                     size_class = onto.ParticleDiameter(value=part_psd[idx3][0],
                                         unit="nm",name="Size class")
