@@ -68,7 +68,7 @@ pico install simnanodome/ontology.simnanofoam.yml
 
 The installation of OpenFOAM, its third-party add-ons, the UNIBO DIN add-ons, 
 and ontodome is rather complex, therefore, a 
-[`Dockerfile`(https://github.com/simphony/SimNanoDOME/blob/master/Dockerfile)
+[`Dockerfile`](https://github.com/simphony/SimNanoDOME/blob/master/Dockerfile)
 is provided that has a twofold purpose:
 - Be used to easily set up the environment and wrapper in a container.
 - Serve as detailed installation guide if a containerized set-up is not
