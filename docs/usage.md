@@ -45,7 +45,8 @@ provided in [examples/nanoFoam.py](https://github.com/simphony/SimNanoDOME/blob/
 
 <figcaption style="display: table-caption; caption-side: bottom; text-align:center">
 
-_Diagram showing the pattern of CUDS objects that SimNanoDOME expects to find in the session's knowledge graph._
+_Diagram showing the pattern of CUDS objects that SimNanoDOME expects to find 
+in the session's knowledge graph._
 
 </figcaption>
     
