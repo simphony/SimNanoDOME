@@ -1,12 +1,13 @@
 FROM python:3.10 AS runner
 
 LABEL maintainer="giorgio.lacivita2@unibo.it"
-LABEL dockerfile.version="1.0"
+LABEL dockerfile.version="1.1"
 
 ENV user=simdomeuser HOME=/home/simdomeuser
 
 # Install requirements
-RUN apt-get update && apt-get install -y git bash qt5-qmake libboost-dev \
+RUN apt-get update && apt-get install -y apt-utils
+RUN apt-get install -y git bash qt5-qmake libboost-dev \
     build-essential flex cmake zlib1g-dev libopenmpi-dev openmpi-bin gnuplot \
     libreadline-dev libncurses-dev libgmp-dev libmpfr-dev libmpc-dev unzip \
     rsync autoconf autotools-dev gawk libfl-dev mpi-default-bin \
@@ -15,19 +16,23 @@ RUN apt-get update && apt-get install -y git bash qt5-qmake libboost-dev \
 
 WORKDIR $HOME/build
 
-# Install OpenFOAM v1906, its third party packages and UNIBO-DIN addons
-ADD https://develop.openfoam.com/Development/openfoam/-/archive/OpenFOAM-v1906/openfoam-OpenFOAM-v1906.tar.gz $HOME/build/OpenFOAM-v1906.tar.gz
+# Get OpenFOAM v1906, its third party packages and UNIBO-DIN addons
+ADD https://develop.openfoam.com/Development/openfoam/-/archive/OpenFOAM-v1906/openfoam-OpenFOAM-v1906.tar.gz $HOME/build/openfoam-OpenFOAM-v1906.tar.gz
 ADD https://sourceforge.net/projects/openfoam/files/v1906/ThirdParty-v1906.tgz/download $HOME/build/ThirdParty-v1906.tgz
-COPY OpenFOAM_src.zip .
-# extract the files
-RUN tar -xf $HOME/build/OpenFOAM-v1906.tar.gz && \
-    mv openfoam-OpenFOAM-v1906 OpenFOAM-v1906
+
+RUN tar -xf $HOME/build/openfoam-OpenFOAM-v1906.tar.gz && \
+    mv openfoam-OpenFOAM-v1906/ OpenFOAM-v1906/
 RUN tar -xf ThirdParty-v1906.tgz
-RUN unzip -q OpenFOAM_src.zip && \
-    cp -r OpenFOAM_src/OpenFOAM/OpenFOAM-v1906/* OpenFOAM-v1906/ && \
-    rm -r OpenFOAM_src.zip OpenFOAM_src/
-# remove unnecessary files
-RUN rm -f OpenFOAM-v1906.tar.gz ThirdParty.tgz
+
+RUN git clone https://github.com/giorgiolacivita/LTEPlasmaFoam.git OpenFOAM-v1906-add-ons
+
+WORKDIR $HOME/build/OpenFOAM-v1906-add-ons
+RUN rm -rf LICENSE README.md user-v1906
+WORKDIR $HOME/build
+RUN cp -rf OpenFOAM-v1906-add-ons/OpenFOAM-v1906/* OpenFOAM-v1906/ && rm -rf OpenFOAM-v1906-add-ons
+
+RUN rm -f openfoam-OpenFOAM-v1906.tar.gz ThirdParty-v1906.tgz
+
 # compile OpenFOAM with the third party packages and the UNIBO-DIN addons
 WORKDIR $HOME/build/OpenFOAM-v1906
 RUN bash -c 'source /home/simdomeuser/build/OpenFOAM-v1906/etc/bashrc && wclean all'
@@ -35,6 +40,8 @@ RUN sed -i '/pybind11/d' applications/solvers/incompressible/reactNetFoam/Make/o
     sed -i 's/\$(c++WARN) //g' wmake/rules/linux64Gcc/c++ && \
     sed -i -e '/isAdministrator/,+9d' src/OpenFOAM/db/dynamicLibrary/dynamicCode/dynamicCode.C
 RUN bash -c 'source /home/simdomeuser/build/OpenFOAM-v1906/etc/bashrc && ./Allwmake -j -q -s'
+
+RUN source /home/simdomeuser/build/OpenFOAM-v1906/etc/bashrc
 
 # Get ontodome and simnanodome
 WORKDIR $HOME/build
