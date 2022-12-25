@@ -8,20 +8,18 @@ that is intended to be used for investigating gas-phase nano-particle synthesis
 using a Direct-Current (DC) plasma source. The wrapper makes available to the 
 user three different models of increasing complexity and computational time:
  - Moment method (Low Accuracy): is the cheapest one in terms of computational
-   cost (about 30 minutes) and returns to the user the mean diameter, the mean
+   cost and returns to the user the mean diameter, the mean
    number density and the mean volume fraction of the nano-particle population.
    No PSD (Particle Size Distribution) is returned.
  - PBM (Medium Accuracy): the Population Balance Method returns to the user the 
    Size Distribution of both Particles and Aggregates/Agglomerates by means of
-   diameter, number density and volume fraction. Its computational time is in
-   the order of a couple of hours.
+   diameter, number density and volume fraction.
  - CGMD (High Accuracy): is the most expensive method which can return to the 
    user the same results of PBM method with the addition of the direct 
    simulation of the aggregates/agglomerates formation, thus allowing to 
-   compute the Fractal dimension of the nano-particle population. Its 
-   computational cost is in the order of a couple of days.
+   compute the Fractal dimension of the nano-particle population.
 
-*Contact*: [Giorgio La Civita](mailto:giorgio.lacivita2@unibo.it) from the 
+*Contact*: [Giorgio La Civita](mailto:giorgio.lacivita2@unibo.it) and [Emanuele Ghedini](mailto:emanuele.ghedini@unibo.it) from the 
 [DIN](https://ingegneriaindustriale.unibo.it/it),
 [Alma Mater Studiorum - University of Bologna](https://www.unibo.it).
 
@@ -37,17 +35,14 @@ packages, but also with several add-ons from the
 In addition, commit
 [`a727b69`](https://github.com/nanodome/ontodome/commit/a727b6914f8fe2d926d13ae6622c0240d59726c9)
 from the [ontodome](https://github.com/nanodome/ontodome) library is required. 
-The UNIBO DIN add-ons are not publicly available: contact 
-[Giorgio La Civita](mailto:giorgio.lacivita2@unibo.it) if you wish to obtain 
-them.
+The UNIBO DIN add-ons are publicly available at: (https://github.com/giorgiolacivita/LTEPlasmaFoam) release v1.0.0.
 
 <!---installation-end-dbeeaa52-->
 
 Since such a set-up is fairly complex,
 a [`Dockerfile`](https://github.com/simphony/SimNanoDOME/blob/master/Dockerfile)
-is provided. It can be used not only to build a docker image where the wrapper
-can be run but also as a guideline for setting up the environment on your own 
-system. Visit the
+is provided and is the recommended way of use (a couple of hours is required for the image to build). It can be used not only to build a docker image where the wrapper
+can be run but also as a guideline for setting up the environment on your own system. Visit the
 [_"Docker"_ section of the documentation](https://simnanodome.readthedocs.io/en/latest/installation.html#docker)
 for more details.
 

@@ -7,7 +7,7 @@
 
 Since such a set-up is fairly complex,
 a [`Dockerfile`](https://github.com/simphony/SimNanoDOME/blob/master/Dockerfile)
-is provided. It can be used not only to build a docker image where the wrapper
+is provided and is the recommended way of use. It can be used not only to build a docker image where the wrapper
 can be run but also as a guideline for setting up the environment on your own 
 system. Visit the [_"Docker"_ section](#docker) for more details.
 
@@ -22,13 +22,9 @@ As the installation of OpenFOAM, its third-party add-ons, the UNIBO DIN add-ons,
 and ontodome is rather complex, a 
 [`Dockerfile`](https://github.com/simphony/SimNanoDOME/blob/master/Dockerfile)
 is provided that has a twofold purpose:
-- Be used to easily set up the environment and wrapper in a container.
+- Be used to easily set up the environment and wrapper in a container (a couple of hours is required for the image to build).
 - Serve as detailed installation guide if a containerized set-up is not
   desired.
-
-Remember that UNIBO DIN add-ons for OpenFOAM must be provided in order to build
-the Docker image. Just copy them to the same folder as the Dockerfile and 
-rename the zip file to `OpenFOAM_src.zip`.
 
 To build the docker image, clone the SimNanoDOME repository
 
@@ -47,4 +43,10 @@ shell within it running the command below.
 
 ```shell
 docker run --rm -it simnanodome python
+```
+
+or access a bash shell using:
+
+```shell
+docker run --rm -it simnanodome bash
 ```

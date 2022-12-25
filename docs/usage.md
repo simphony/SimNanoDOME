@@ -34,23 +34,10 @@ from osp.core.namespaces import nanofoam
 The pattern of CUDS objects that SimNanoDOME expects depends on its operation 
 mode, although it is roughly the same for all of them. To launch a simulation,
 you will have to instantiate CUDS objects matching any of the patterns depicted
-on the figure below. It is suggested that you do it in SimPhoNy's default
+on the figures below. It is suggested that you do it in SimPhoNy's default
 session, and then transfer them to the adequate sessions depending on the
 operation mode. A code example of how to initialize the CUDS objects is
-provided in [examples/nanoFoam.py](https://github.com/simphony/SimNanoDOME/blob/master/examples/nanoFoam.py#L22). 
-
-<figure style="display: table; text-align:center; margin-left: auto; margin-right:auto">
-
-![SimNanoDOME input](./static/graph_pattern.drawio.svg)
-
-<figcaption style="display: table-caption; caption-side: bottom; text-align:center">
-
-_Diagram showing the pattern of CUDS objects that SimNanoDOME expects to find 
-in the session's knowledge graph._
-
-</figcaption>
-    
-</figure>
+provided in [examples/nanoFoam.py](https://github.com/simphony/SimNanoDOME/blob/master/examples/nanoFoam.py#L22).
 
 Once the inputs of the simulation have been instantiated as CUDS objects, they
 must be transferred to one of the SimPhoNy sessions included in the package, 
@@ -59,8 +46,7 @@ on the diagram, there are two CUDS objects that are expected to be directly
 connected to the Wrapper CUDS: the `AccuracyLevel` and the `nanoReactor`. Such 
 objects will be the ones exchanged between the different sessions to achieve 
 the desired coupling and/or linking. Read the [next section](#operation-modes) 
-to get an overview on what operation mode does and how the coupling and linking
-works for each operation mode.
+to get an overview on what an operation mode does.
 
 ## Operation modes
 
@@ -68,8 +54,21 @@ works for each operation mode.
 
 The user can assess the nano-particle formation without linking to a CFD 
 software. This could be used for a first-step evaluation of the considered 
-process' feasibility. The user specifies all the inputs required by nanodome 
+process' feasibility. The user specifies all the inputs required by nanoDOME 
 such as gas composition, precursor species and so on.
+
+<figure style="display: table; text-align:center; margin-left: auto; margin-right:auto">
+
+![SimNanoDOME input](./static/nanodome.drawio.svg)
+
+<figcaption style="display: table-caption; caption-side: bottom; text-align:center">
+
+_Diagram showing the pattern of CUDS objects that SimNanoDOME expects to find 
+in the session's knowledge graph for the nanodome mode. Inputs are in green and outputs in blue._
+
+</figcaption>
+    
+</figure>
 
 This operation mode uses the `NanoDOME` session to compute the nanoparticle 
 size distribution. A code example of how to use this mode is available in 
@@ -77,27 +76,52 @@ size distribution. A code example of how to use this mode is available in
 
 ### Stand-alone CFD
 
-The user can assess the nano-particle formation without linking to a CFD 
-software. This could be used for a first-step evaluation of the considered 
-process' feasibility. The user specifies all the inputs required by nanodome 
-such as gas composition, precursor species and so on.
+The user can assess the plasma reactor thermodynamic conditions. This could be used for a first-step evaluation of the considered 
+process' feasibility. The user specifies all the inputs required by Elenbaas and the CFD software 
+such as gas composition, plasma source operative conditions and so on.
 
 This operation mode links an `ElenbaasSession` to a `CFDSession`. The
-`ElenbaasSession` first computes the plasma properties, that are then passed 
+`ElenbaasSession` first computes the plasma source properties, that are then passed 
 the `CFDSession` to compute the different streamlines.
+
+<figure style="display: table; text-align:center; margin-left: auto; margin-right:auto">
+
+![SimNanoDOME input](./static/cfd.drawio.svg)
+
+<figcaption style="display: table-caption; caption-side: bottom; text-align:center">
+
+_Diagram showing the pattern of CUDS objects that SimNanoDOME expects to find 
+in the session's knowledge graph for the cfd mode. Inputs are in green and outputs in blue._
+
+</figcaption>
+    
+</figure>
 
 A code example of how to use this mode is available in 
 [examples/nanoFoam.py](https://github.com/simphony/SimNanoDOME/blob/master/examples/nanoFoam.py#L138).
 
 ### CFD-linked
 
-The user specifies the properties according to the current GUI requirements. 
+The user can evaluate the nano-particle gas phase synthesis by linking a CFD software and NanoDOME. In this way the thermodynamic properties of the reactor are taken into account.
 This is the standard mode.
 
-This operation mode links an `ElenbaasSession` to a `CFDSession`. The
+This operation mode links an `ElenbaasSession` to a `CFDSession` which is then linked to a `NanoDOMESession`. The
 `ElenbaasSession` first computes the plasma properties, that are then passed 
-the `CFDSession` to compute the streamlines and the nanoparticle size 
+the `CFDSession` to compute the streamlines and used as input for several `NanoDOMESession` to evaluate the nanoparticle size 
 distribution.
+
+<figure style="display: table; text-align:center; margin-left: auto; margin-right:auto">
+
+![SimNanoDOME input](./static/linked.drawio.svg)
+
+<figcaption style="display: table-caption; caption-side: bottom; text-align:center">
+
+_Diagram showing the pattern of CUDS objects that SimNanoDOME expects to find 
+in the session's knowledge graph for cfd-linked mode. Inputs are in green and outputs in blue._
+
+</figcaption>
+    
+</figure>
 
 A code example of how to use this mode is available in 
 [examples/nanoFoam.py](https://github.com/simphony/SimNanoDOME/blob/master/examples/nanoFoam.py#L269).
@@ -106,7 +130,20 @@ A code example of how to use this mode is available in
 
 The user can access a very reliable model for computing the thermodynamic 
 properties of an LTE plasma discharge. This operation mode uses the 
-`ElenbaasSession` to compute the Plasma properties.
+`ElenbaasSession` to compute the plasma source properties.
+
+<figure style="display: table; text-align:center; margin-left: auto; margin-right:auto">
+
+![SimNanoDOME input](./static/elenbaas.drawio.svg)
+
+<figcaption style="display: table-caption; caption-side: bottom; text-align:center">
+
+_Diagram showing the pattern of CUDS objects that SimNanoDOME expects to find 
+in the session's knowledge graph for elenbaas mode. Inputs are in green and outputs in blue._
+
+</figcaption>
+    
+</figure>
 
 A code example of how to use this mode is available in 
 [examples/nanoFoam.py](https://github.com/simphony/SimNanoDOME/blob/master/examples/nanoFoam.py#L188).
@@ -114,12 +151,25 @@ A code example of how to use this mode is available in
 ### Coupled CFD-NanoDOME
 
 A simple CFD model is coupled using a reactor network approach to NanoDOME. 
-This operation mode couples a `CoupledReactorSession` with a `NanoDOMESession`.
+This operation mode couples a `CoupledReactorSession` with several `NanoDOMESession`.
 At each time step, the results from the previous step are passed to the
 `CoupledReactorSession` and then its results to the `NanoDOMESession`. This 
 operation is repeated for each time step until the pre-established simulation
 time has been covered. At the end, the nanoparticle size distribution can be 
 extracted.
+
+<figure style="display: table; text-align:center; margin-left: auto; margin-right:auto">
+
+![SimNanoDOME input](./static/coupled.drawio.svg)
+
+<figcaption style="display: table-caption; caption-side: bottom; text-align:center">
+
+_Diagram showing the pattern of CUDS objects that SimNanoDOME expects to find 
+in the session's knowledge graph for the coupled mode. Inputs are in green and outputs in blue._
+
+</figcaption>
+    
+</figure>
 
 A code example of how to use this mode is available in 
 [examples/nanoFoam.py](https://github.com/simphony/SimNanoDOME/blob/master/examples/nanoFoam.py#L430).

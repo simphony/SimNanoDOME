@@ -33,22 +33,24 @@ RUN cp -rf OpenFOAM-v1906-add-ons/OpenFOAM-v1906/* OpenFOAM-v1906/ && rm -rf Ope
 
 RUN rm -f openfoam-OpenFOAM-v1906.tar.gz ThirdParty-v1906.tgz
 
-# compile OpenFOAM with the third party packages and the UNIBO-DIN addons
+# Compile OpenFOAM with the third party packages and the UNIBO-DIN addons
 WORKDIR $HOME/build/OpenFOAM-v1906
+RUN bash -c 'chmod +rwx /home/simdomeuser/build/OpenFOAM-v1906/etc/bashrc'
 RUN bash -c 'source /home/simdomeuser/build/OpenFOAM-v1906/etc/bashrc && wclean all'
 RUN sed -i '/pybind11/d' applications/solvers/incompressible/reactNetFoam/Make/options && \
     sed -i 's/\$(c++WARN) //g' wmake/rules/linux64Gcc/c++ && \
     sed -i -e '/isAdministrator/,+9d' src/OpenFOAM/db/dynamicLibrary/dynamicCode/dynamicCode.C
 RUN bash -c 'source /home/simdomeuser/build/OpenFOAM-v1906/etc/bashrc && ./Allwmake -j -q -s'
-
-RUN source /home/simdomeuser/build/OpenFOAM-v1906/etc/bashrc
+RUN bash -c 'echo "source /home/simdomeuser/build/OpenFOAM-v1906/etc/bashrc" >> /etc/bash.bashrc '
 
 # Get ontodome and simnanodome
 WORKDIR $HOME/build
 RUN git clone https://github.com/nanodome/ontodome.git
 RUN mkdir simnanodome
-ADD . $HOME/build/simnanodome
-# compile ontodome and link it to simnanodome
+RUN git clone https://github.com/simphony/SimNanoDOME.git
+RUN mv SimNanoDOME/* simnanodome/ && rm -rf SimNanoDOME
+
+# Compile ontodome and link it to simnanodome
 WORKDIR $HOME/build/ontodome
 RUN git checkout a727b6914f8fe2d926d13ae6622c0240d59726c9
 RUN mkdir -p $HOME/build/simnanodome/osp/wrappers/simnanodome/nanolib/
