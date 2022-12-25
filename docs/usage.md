@@ -173,3 +173,10 @@ in the session's knowledge graph for the coupled mode. Inputs are in green and o
 
 A code example of how to use this mode is available in 
 [examples/nanoFoam.py](https://github.com/simphony/SimNanoDOME/blob/master/examples/nanoFoam.py#L430).
+
+### Examples
+
+The user can develop its own workflow from scratch or using the example available in 
+[examples/nanoFoam.py](https://github.com/simphony/SimNanoDOME/blob/master/examples/nanoFoam.py#1).
+The user can also directly use the example script as it is by selecting the desidered mode and changing the CUDS values.
+This is recommended for CFD-linked mode in particular since the linking process is not handled by the wrappers. For this reason a linking algorithm has been provided in the example file.
