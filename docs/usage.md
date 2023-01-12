@@ -34,19 +34,21 @@ from osp.core.namespaces import nanofoam
 The pattern of CUDS objects that SimNanoDOME expects depends on its operation 
 mode, although it is roughly the same for all of them. To launch a simulation,
 you will have to instantiate CUDS objects matching any of the patterns depicted
-on the figures below. It is suggested that you do it in SimPhoNy's default
-session, and then transfer them to the adequate sessions depending on the
-operation mode. A code example of how to initialize the CUDS objects is
-provided in [examples/nanoFoam.py](https://github.com/simphony/SimNanoDOME/blob/master/examples/nanoFoam.py#L22).
+on the figures from the [operation modes section](#operation-modes). It is
+suggested that you do it in SimPhoNy's default session, and then transfer them
+to the adequate sessions depending on the operation mode. A code example of how
+to initialize the CUDS objects is provided in 
+[examples/nanoFoam.py](https://github.com/simphony/SimNanoDOME/blob/master/examples/nanoFoam.py#L22).
 
 Once the inputs of the simulation have been instantiated as CUDS objects, they
 must be transferred to one of the SimPhoNy sessions included in the package, 
 and then such session may be coupled or linked with others. As it can be seen 
-on the diagram, there are two CUDS objects that are expected to be directly 
-connected to the Wrapper CUDS: the `AccuracyLevel` and the `nanoReactor`. Such 
-objects will be the ones exchanged between the different sessions to achieve 
-the desired coupling and/or linking. Read the [next section](#operation-modes) 
-to get an overview on what an operation mode does.
+on the aforementioned figures, there are two CUDS objects that are expected to 
+be directly connected to the Wrapper CUDS: the `AccuracyLevel` and the 
+`nanoReactor`. Such objects will be the ones exchanged between the different 
+sessions to achieve the desired coupling and/or linking. Read the 
+[operation modes section](#operation-modes) to get an overview on what an 
+operation mode does.
 
 ## Operation modes
 
