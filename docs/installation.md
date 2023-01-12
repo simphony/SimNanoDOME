@@ -32,9 +32,10 @@ To build the docker image, clone the SimNanoDOME repository
 git clone https://github.com/simphony/SimNanoDOME
 ```
 
-and run the following command.
+and run the following commands.
 
 ```shell
+cd simnanodome
 docker build . -t simnanodome
 ```
 
