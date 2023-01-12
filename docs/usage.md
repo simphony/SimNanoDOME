@@ -61,12 +61,13 @@ such as gas composition, precursor species and so on.
 
 <figure style="display: table; text-align:center; margin-left: auto; margin-right:auto">
 
-![SimNanoDOME input](./static/nanodome.drawio.svg)
+![SimNanoDOME input for Stand-alone NanoDome](./static/nanodome.drawio.svg)
 
 <figcaption style="display: table-caption; caption-side: bottom; text-align:center">
 
 _Diagram showing the pattern of CUDS objects that SimNanoDOME expects to find 
-in the session's knowledge graph for the nanodome mode. Inputs are in green and outputs in blue._
+in the session's knowledge graph and the CUDS objects that are produced 
+as simulation outputs for the nanodome mode._
 
 </figcaption>
     
