@@ -46,7 +46,7 @@ shell within it running the command below.
 docker run --rm -it simnanodome python
 ```
 
-or access a bash shell using:
+or access it using a bash shell:
 
 ```shell
 docker run --rm -it simnanodome bash

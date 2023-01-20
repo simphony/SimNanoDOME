@@ -1,11 +1,11 @@
 # Usage
 
-SimNanoDOME can operate in five different modes
+SimNanoDOME can operate in five different simulation workflows:
 
   - [Stand-alone NanoDOME](#stand-alone-nanodome)
   - [Stand-alone CFD](#stand-alone-cfd)
-  - [CFD-linked](#cfd-linked)
   - [Stand-alone Elenbaas](#stand-alone-elenbaas)
+  - [CFD-linked](#cfd-linked)
   - [Coupled CFD-NanoDOME](#coupled-cfd-nanodome)
 
 and includes four different SimPhoNy sessions that must be combined in 
@@ -18,23 +18,23 @@ from osp.wrappers.simelenbaas import ElenbaasSession
 from osp.wrappers.simnanodome import NanoDOMESession
 ```
 
-Read the [operation modes section](#operation-modes) to get an overview on what
-each one does and how the coupling and linking works for each case.
+Read the [simulation workflows section](#simulation-workflows) to get an overview on what
+each one does.
 
 ## Simulation inputs
 
-Regardless of the operation mode, the inputs of a SimNanoDOME simulation are 
-instantiated as CUDS objects using the ontology entities from the `nanofoam` 
-namespace.
+Regardless of the simulation workflow of choice, the inputs of a SimNanoDOME
+simulation are instantiated as CUDS objects using the ontology entities
+from the `nanofoam` namespace.
 
 ```python
 from osp.core.namespaces import nanofoam
 ```
 
-The pattern of CUDS objects that SimNanoDOME expects depends on its operation 
-mode, although it is roughly the same for all of them. To launch a simulation,
+The pattern of CUDS objects that SimNanoDOME expects depends on the simulation workflow,
+although it is roughly the same for all of them. To launch a simulation,
 you will have to instantiate CUDS objects matching any of the patterns depicted
-on the figures from the [operation modes section](#operation-modes). It is
+on the figures from the [simulation workflows section](#simulation-workflows). It is
 suggested that you do it in SimPhoNy's default session, and then transfer them
 to the adequate sessions depending on the operation mode. A code example of how
 to initialize the CUDS objects is provided in 
@@ -46,11 +46,11 @@ and then such session may be coupled or linked with others. As it can be seen
 on the aforementioned figures, there are two CUDS objects that are expected to 
 be directly connected to the Wrapper CUDS: the `AccuracyLevel` and the 
 `nanoReactor`. Such objects will be the ones exchanged between the different 
-sessions to achieve the desired coupling and/or linking. Read the 
-[operation modes section](#operation-modes) to get an overview on what an 
-operation mode does.
+sessions to achieve the desired coupling or linking. Read the 
+[simulation workflows section](#simulation-workflows) to get an overview on what a 
+simulation workflow does.
 
-## Operation modes
+## Simulation workflows
 
 ### Stand-alone NanoDOME
 
@@ -94,7 +94,7 @@ the `CFDSession` to compute the different streamlines.
 <figcaption style="display: table-caption; caption-side: bottom; text-align:center">
 
 _Diagram showing the pattern of CUDS objects that SimNanoDOME expects to find 
-in the session's knowledge graph for the cfd mode. Inputs are in green and outputs in blue._
+in the session's knowledge graph for the cfd mode._
 
 </figcaption>
     
@@ -102,6 +102,28 @@ in the session's knowledge graph for the cfd mode. Inputs are in green and outpu
 
 A code example of how to use this mode is available in 
 [examples/nanoFoam.py](https://github.com/simphony/SimNanoDOME/blob/master/examples/nanoFoam.py#L138).
+
+### Stand-alone Elenbaas
+
+The user can access a very reliable model for computing the thermodynamic 
+properties of an LTE plasma discharge. This operation mode uses the 
+`ElenbaasSession` to compute the plasma source properties.
+
+<figure style="display: table; text-align:center; margin-left: auto; margin-right:auto">
+
+![SimNanoDOME input](./static/elenbaas.drawio.svg)
+
+<figcaption style="display: table-caption; caption-side: bottom; text-align:center">
+
+_Diagram showing the pattern of CUDS objects that SimNanoDOME expects to find 
+in the session's knowledge graph for elenbaas mode._
+
+</figcaption>
+    
+</figure>
+
+A code example of how to use this mode is available in 
+[examples/nanoFoam.py](https://github.com/simphony/SimNanoDOME/blob/master/examples/nanoFoam.py#L188).
 
 ### CFD-linked
 
@@ -120,7 +142,7 @@ distribution.
 <figcaption style="display: table-caption; caption-side: bottom; text-align:center">
 
 _Diagram showing the pattern of CUDS objects that SimNanoDOME expects to find 
-in the session's knowledge graph for cfd-linked mode. Inputs are in green and outputs in blue._
+in the session's knowledge graph for cfd-linked mode._
 
 </figcaption>
     
@@ -128,28 +150,6 @@ in the session's knowledge graph for cfd-linked mode. Inputs are in green and ou
 
 A code example of how to use this mode is available in 
 [examples/nanoFoam.py](https://github.com/simphony/SimNanoDOME/blob/master/examples/nanoFoam.py#L269).
-
-### Stand-alone Elenbaas
-
-The user can access a very reliable model for computing the thermodynamic 
-properties of an LTE plasma discharge. This operation mode uses the 
-`ElenbaasSession` to compute the plasma source properties.
-
-<figure style="display: table; text-align:center; margin-left: auto; margin-right:auto">
-
-![SimNanoDOME input](./static/elenbaas.drawio.svg)
-
-<figcaption style="display: table-caption; caption-side: bottom; text-align:center">
-
-_Diagram showing the pattern of CUDS objects that SimNanoDOME expects to find 
-in the session's knowledge graph for elenbaas mode. Inputs are in green and outputs in blue._
-
-</figcaption>
-    
-</figure>
-
-A code example of how to use this mode is available in 
-[examples/nanoFoam.py](https://github.com/simphony/SimNanoDOME/blob/master/examples/nanoFoam.py#L188).
 
 ### Coupled CFD-NanoDOME
 
@@ -168,7 +168,7 @@ extracted.
 <figcaption style="display: table-caption; caption-side: bottom; text-align:center">
 
 _Diagram showing the pattern of CUDS objects that SimNanoDOME expects to find 
-in the session's knowledge graph for the coupled mode. Inputs are in green and outputs in blue._
+in the session's knowledge graph for the coupled mode._
 
 </figcaption>
     

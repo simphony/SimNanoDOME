@@ -17,7 +17,8 @@ user three different models of increasing complexity and computational time:
  - CGMD (High Accuracy): is the most expensive method which can return to the 
    user the same results of PBM method with the addition of the direct 
    simulation of the aggregates/agglomerates formation, thus allowing to 
-   compute the Fractal dimension of the nano-particle population.
+   compute the Fractal dimension of the nano-particle population and each
+   particle's internal structure.
 
 *Contact*: [Giorgio La Civita](mailto:giorgio.lacivita2@unibo.it) and [Emanuele Ghedini](mailto:emanuele.ghedini@unibo.it) from the 
 [DIN](https://ingegneriaindustriale.unibo.it/it),
@@ -35,7 +36,7 @@ packages, but also with several add-ons from the
 In addition, commit
 [`a727b69`](https://github.com/nanodome/ontodome/commit/a727b6914f8fe2d926d13ae6622c0240d59726c9)
 from the [ontodome](https://github.com/nanodome/ontodome) library is required. 
-The UNIBO DIN add-ons are publicly available at: (https://github.com/giorgiolacivita/LTEPlasmaFoam) release v1.0.0.
+The [UNIBO DIN add-ons](https://github.com/giorgiolacivita/LTEPlasmaFoam) release v1.0.0 for OpenFOAM are also required.
 
 <!---installation-end-dbeeaa52-->
 
