@@ -94,7 +94,8 @@ the `CFDSession` to compute the different streamlines.
 <figcaption style="display: table-caption; caption-side: bottom; text-align:center">
 
 _Diagram showing the pattern of CUDS objects that SimNanoDOME expects to find 
-in the session's knowledge graph for the cfd mode._
+in the session's knowledge graph and the CUDS objects that are produced 
+as simulation outputs for the cfd mode._
 
 </figcaption>
     
@@ -116,7 +117,8 @@ properties of an LTE plasma discharge. This operation mode uses the
 <figcaption style="display: table-caption; caption-side: bottom; text-align:center">
 
 _Diagram showing the pattern of CUDS objects that SimNanoDOME expects to find 
-in the session's knowledge graph for elenbaas mode._
+in the session's knowledge graph and the CUDS objects that are produced 
+as simulation outputs for elenbaas mode._
 
 </figcaption>
     
@@ -142,7 +144,8 @@ distribution.
 <figcaption style="display: table-caption; caption-side: bottom; text-align:center">
 
 _Diagram showing the pattern of CUDS objects that SimNanoDOME expects to find 
-in the session's knowledge graph for cfd-linked mode._
+in the session's knowledge graph and the CUDS objects that are produced 
+as simulation outputs for cfd-linked mode._
 
 </figcaption>
     
@@ -168,7 +171,8 @@ extracted.
 <figcaption style="display: table-caption; caption-side: bottom; text-align:center">
 
 _Diagram showing the pattern of CUDS objects that SimNanoDOME expects to find 
-in the session's knowledge graph for the coupled mode._
+in the session's knowledge graph and the CUDS objects that are produced 
+as simulation outputs for the coupled mode._
 
 </figcaption>
     
