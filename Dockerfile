@@ -19,19 +19,21 @@ WORKDIR $HOME/build
 # Get OpenFOAM v1906, its third party packages and UNIBO-DIN addons
 ADD https://develop.openfoam.com/Development/openfoam/-/archive/OpenFOAM-v1906/openfoam-OpenFOAM-v1906.tar.gz $HOME/build/openfoam-OpenFOAM-v1906.tar.gz
 ADD https://sourceforge.net/projects/openfoam/files/v1906/ThirdParty-v1906.tgz/download $HOME/build/ThirdParty-v1906.tgz
+RUN git clone https://github.com/giorgiolacivita/LTEPlasmaFoam.git OpenFOAM-v1906-add-ons
+RUN git --git-dir OpenFOAM-v1906-add-ons/.git --work-tree=OpenFOAM-v1906-add-ons checkout 52adc871288b5aeca8b7ed4be01083daefd11460
 
 RUN tar -xf $HOME/build/openfoam-OpenFOAM-v1906.tar.gz && \
-    mv openfoam-OpenFOAM-v1906/ OpenFOAM-v1906/
-RUN tar -xf ThirdParty-v1906.tgz
+    mv openfoam-OpenFOAM-v1906/ OpenFOAM-v1906/ && \
+    rm -f openfoam-OpenFOAM-v1906.tar.gz
 
-RUN git clone https://github.com/giorgiolacivita/LTEPlasmaFoam.git OpenFOAM-v1906-add-ons
+RUN tar -xf ThirdParty-v1906.tgz && \
+    rm -f ThirdParty-v1906.tgz
 
 WORKDIR $HOME/build/OpenFOAM-v1906-add-ons
 RUN rm -rf LICENSE README.md user-v1906
 WORKDIR $HOME/build
 RUN cp -rf OpenFOAM-v1906-add-ons/OpenFOAM-v1906/* OpenFOAM-v1906/ && rm -rf OpenFOAM-v1906-add-ons
-
-RUN rm -f openfoam-OpenFOAM-v1906.tar.gz ThirdParty-v1906.tgz
+RUN rm -rf OpenFOAM-v1906-add-ons ThirdParty-v1906
 
 # Compile OpenFOAM with the third party packages and the UNIBO-DIN addons
 WORKDIR $HOME/build/OpenFOAM-v1906
@@ -46,18 +48,17 @@ RUN bash -c 'echo "source /home/simdomeuser/build/OpenFOAM-v1906/etc/bashrc" >> 
 # Get ontodome and simnanodome
 WORKDIR $HOME/build
 RUN git clone https://github.com/nanodome/ontodome.git
+RUN git --git-dir ontodome/.git --work-tree=ontodome checkout a727b6914f8fe2d926d13ae6622c0240d59726c9
 RUN mkdir simnanodome
-RUN git clone https://github.com/simphony/SimNanoDOME.git
-RUN mv SimNanoDOME/* simnanodome/ && rm -rf SimNanoDOME
+ADD . $HOME/build/simnanodome
 
 # Compile ontodome and link it to simnanodome
 WORKDIR $HOME/build/ontodome
-RUN git checkout a727b6914f8fe2d926d13ae6622c0240d59726c9
-RUN mkdir -p $HOME/build/simnanodome/osp/wrappers/simnanodome/nanolib/
 RUN sed -i 's|/usr/include/python3.9|/usr/local/include/python3.10|g' ontodome.pro && \
     qmake -qt=5 ontodome.pro && \
-    make && \
-    ln -sf $HOME/build/ontodome/libontodome.so.1 $HOME/build/simnanodome/osp/wrappers/simnanodome/nanolib/libontodome.so
+    make
+RUN mkdir -p $HOME/build/simnanodome/osp/wrappers/simnanodome/nanolib/
+RUN ln -sf $HOME/build/ontodome/libontodome.so.1 $HOME/build/simnanodome/osp/wrappers/simnanodome/nanolib/libontodome.so
 
 # Install SimNanoDOME
 ENV PIP_ROOT_USER_ACTION=ignore \
