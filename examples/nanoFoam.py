@@ -17,14 +17,14 @@ from osp.core.utils import pretty_print
 #####################################################################
 # modes supported: elenbaas (elenbaas only), nanodome (nanodome only),
 # cfd (openfoam and elenbaas), linked (nanofoam), coupled (nanocouplefoam)
-mode = 'nanodome'
+mode = 'coupled'
 
 # Create the computational mesh, boundary conditions and properties
 #####################################################################
 
 # Set the accuracy level
-accuracy_level = onto.LowAccuracyLevel()
-# accuracy_level = onto.MediumAccuracyLevel()
+# accuracy_level = onto.LowAccuracyLevel()
+accuracy_level = onto.MediumAccuracyLevel()
 # accuracy_level = onto.HighAccuracyLevel()
 
 # Create precursor's species
@@ -149,7 +149,7 @@ if mode == 'cfd':
 
         # Run elenbaas
         elenwrapper = onto.NanoFOAMWrapper(session=elen)
-        elenwrapper.add(source, accuracy_level)
+        elenwrapper.add(source)
 
         elen.run()
 
@@ -161,7 +161,7 @@ if mode == 'cfd':
 
             # Run cfd
             cfdwrapper = onto.NanoFOAMWrapper(session=cfd)
-            cfdwrapper.add(source, accuracy_level)
+            cfdwrapper.add(source)
 
             cfd.run()
 
@@ -281,7 +281,7 @@ elif mode == 'linked':
         # Run elenbaas
         ##########################################################
         elenwrapper = onto.NanoFOAMWrapper(session=elen)
-        elenwrapper.add(source, accuracy_level)
+        elenwrapper.add(source)
 
         elen.run()
 
@@ -294,7 +294,7 @@ elif mode == 'linked':
             # Run cfd
             ##########################################################
             cfdwrapper = onto.NanoFOAMWrapper(session=cfd)
-            cfdwrapper.add(source, accuracy_level)
+            cfdwrapper.add(source)
 
             cfd.run()
 

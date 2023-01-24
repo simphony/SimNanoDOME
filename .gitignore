@@ -8,6 +8,7 @@ nanodome-*/
 .coverage
 .vscode/
 tmp/
+.drawio.svg.bkp
 
 # # Byte-compiled / optimized / DLL files
 __pycache__/

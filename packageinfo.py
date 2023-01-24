@@ -1,3 +1,3 @@
 NAME = "simnanodome"
-VERSION = "0.9.1"
-BUILD = "34"
+VERSION = "1.0.0"
+BUILD = "35"
